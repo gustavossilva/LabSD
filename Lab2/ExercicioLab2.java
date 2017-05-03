@@ -1,13 +1,33 @@
 import java.util.Random;
 
 public class ExercicioLab2 extends Thread {
- 	synchronized static String message;
- 	synchronized static Thread ts[] = new Thread[30];
+ 	 static String message;
+ 	 static Thread ts[] = new Thread[30];
 	
-	public void run () {
-				
+	public synchronized void run () {
+	    char teste;
+	    if(encontraMinuscula(message) != -1){
+	        System.out.println(encontraMinuscula(message));
+	        teste = Character.toUpperCase(message.charAt(encontraMinuscula(message)));
+	        System.out.println(teste);
+	         message = replaceCharAt(message,encontraMinuscula(message),teste);
+	         System.out.println(message);
+	    }
 	}
 	
+	public static String replaceCharAt(String s, int pos, char c){
+        return s.substring(0, pos) + c + s.substring(pos + 1);
+    }
+
+	
+	public int encontraMinuscula(String str) {        
+        for(int i=0; i<str.length(); i++) {
+            if(Character.isLowerCase(str.charAt(i))) {
+                return i;
+            }
+        }
+        return -1;
+    }
 	
 	public static void main(String args[]) {
 		Random r = new Random();
@@ -22,8 +42,7 @@ public class ExercicioLab2 extends Thread {
 		}
 		
 		message = sb.toString();
-	
-
+		System.out.println("Menssagem Inicial: "+message);
 		
 		for (int i = 0; i < 30; i++){
 			ts[i] = new ExercicioLab2();
