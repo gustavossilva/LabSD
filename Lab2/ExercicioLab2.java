@@ -7,11 +7,9 @@ public class ExercicioLab2 extends Thread {
 	public synchronized void run () {
 	    char teste;
 	    if(encontraMinuscula(message) != -1){
-	        System.out.println(encontraMinuscula(message));
+	        System.out.println("Mensagem: "+message);
 	        teste = Character.toUpperCase(message.charAt(encontraMinuscula(message)));
-	        System.out.println(teste);
-	         message = replaceCharAt(message,encontraMinuscula(message),teste);
-	         System.out.println(message);
+	        message = replaceCharAt(message,encontraMinuscula(message),teste);
 	    }
 	}
 	
@@ -20,7 +18,7 @@ public class ExercicioLab2 extends Thread {
     }
 
 	
-	public int encontraMinuscula(String str) {        
+	public static int encontraMinuscula(String str) {        
         for(int i=0; i<str.length(); i++) {
             if(Character.isLowerCase(str.charAt(i))) {
                 return i;
