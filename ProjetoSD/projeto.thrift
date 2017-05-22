@@ -15,7 +15,7 @@ struct Aresta {
 	1:i32 v1,
 	2:i32 v2,
 	3:double peso,
-	4:i16 flag,
+	4:i32 flag,
 	5:string descricao
 }
 
@@ -26,7 +26,7 @@ struct Grafo {
 
 service Operations {
     bool criarVertice(1:i32 nome,2:i32 cor,3:string descricao,4:double peso),
-    bool criarAresta(1:i32 v1,2:i32 v2,3:double peso,4:i16 flag,5:string descricao),
+    bool criarAresta(1:i32 v1,2:i32 v2,3:double peso,4:i32 flag,5:string descricao),
     //Grafo criarGrafo(1:list<Vertice> V,2:list<Aresta> A),
     bool delVertice(1:i32 nome),
     bool delAresta(1:i32 v1,2:i32 v2),
@@ -38,7 +38,8 @@ service Operations {
     string exibirGrafo(),
     string exibirVertice(),
     string exibirAresta(),
-    string listarVerticesArestas(1:Aresta A),
+    string listarVerticesArestas(1:i32 v1,2:i32 v2),
     string listarArestasVertice(1:i32 nomeV),
-    string listarVizinhosVertice(1:i32 nomeV)
+    string listarVizinhosVertice(1:i32 nomeV),
+    string menorCaminho(1:i32 v1,2:i32 v2)
 }
