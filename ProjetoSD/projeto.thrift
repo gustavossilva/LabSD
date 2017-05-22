@@ -36,7 +36,9 @@ service Operations {
     Vertice getVertice(1:i32 nome),
     Aresta getAresta(1:i32 v1,2:i32 v2),
     string exibirGrafo(),
-    void listarVerticesArestas(1:Aresta A),
-    void listarArestasVertice(1:i32 nomeV),
-    void listarVizinhosVertice(1:i32 nomeV)
+    string exibirVertice(),
+    string exibirAresta(),
+    string listarVerticesArestas(1:Aresta A),
+    string listarArestasVertice(1:i32 nomeV),
+    string listarVizinhosVertice(1:i32 nomeV)
 }
