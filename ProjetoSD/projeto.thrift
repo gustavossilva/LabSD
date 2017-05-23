@@ -25,6 +25,8 @@ struct Grafo {
 }
 
 service Operations {
+    void carregaGrafo(1:string caminho),
+    void salvaGrafo(1:string caminho),
     bool criarVertice(1:i32 nome,2:i32 cor,3:string descricao,4:double peso),
     bool criarAresta(1:i32 v1,2:i32 v2,3:double peso,4:i32 flag,5:string descricao),
     //Grafo criarGrafo(1:list<Vertice> V,2:list<Aresta> A),

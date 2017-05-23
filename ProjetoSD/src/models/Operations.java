@@ -12,6 +12,10 @@ public class Operations {
 
   public interface Iface {
 
+    public void carregaGrafo(java.lang.String caminho) throws org.apache.thrift.TException;
+
+    public void salvaGrafo(java.lang.String caminho) throws org.apache.thrift.TException;
+
     public boolean criarVertice(int nome, int cor, java.lang.String descricao, double peso) throws org.apache.thrift.TException;
 
     public boolean criarAresta(int v1, int v2, double peso, int flag, java.lang.String descricao) throws org.apache.thrift.TException;
@@ -47,6 +51,10 @@ public class Operations {
   }
 
   public interface AsyncIface {
+
+    public void carregaGrafo(java.lang.String caminho, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws org.apache.thrift.TException;
+
+    public void salvaGrafo(java.lang.String caminho, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws org.apache.thrift.TException;
 
     public void criarVertice(int nome, int cor, java.lang.String descricao, double peso, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
@@ -100,6 +108,46 @@ public class Operations {
 
     public Client(org.apache.thrift.protocol.TProtocol iprot, org.apache.thrift.protocol.TProtocol oprot) {
       super(iprot, oprot);
+    }
+
+    public void carregaGrafo(java.lang.String caminho) throws org.apache.thrift.TException
+    {
+      send_carregaGrafo(caminho);
+      recv_carregaGrafo();
+    }
+
+    public void send_carregaGrafo(java.lang.String caminho) throws org.apache.thrift.TException
+    {
+      carregaGrafo_args args = new carregaGrafo_args();
+      args.setCaminho(caminho);
+      sendBase("carregaGrafo", args);
+    }
+
+    public void recv_carregaGrafo() throws org.apache.thrift.TException
+    {
+      carregaGrafo_result result = new carregaGrafo_result();
+      receiveBase(result, "carregaGrafo");
+      return;
+    }
+
+    public void salvaGrafo(java.lang.String caminho) throws org.apache.thrift.TException
+    {
+      send_salvaGrafo(caminho);
+      recv_salvaGrafo();
+    }
+
+    public void send_salvaGrafo(java.lang.String caminho) throws org.apache.thrift.TException
+    {
+      salvaGrafo_args args = new salvaGrafo_args();
+      args.setCaminho(caminho);
+      sendBase("salvaGrafo", args);
+    }
+
+    public void recv_salvaGrafo() throws org.apache.thrift.TException
+    {
+      salvaGrafo_result result = new salvaGrafo_result();
+      receiveBase(result, "salvaGrafo");
+      return;
     }
 
     public boolean criarVertice(int nome, int cor, java.lang.String descricao, double peso) throws org.apache.thrift.TException
@@ -498,6 +546,70 @@ public class Operations {
 
     public AsyncClient(org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.async.TAsyncClientManager clientManager, org.apache.thrift.transport.TNonblockingTransport transport) {
       super(protocolFactory, clientManager, transport);
+    }
+
+    public void carregaGrafo(java.lang.String caminho, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      carregaGrafo_call method_call = new carregaGrafo_call(caminho, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class carregaGrafo_call extends org.apache.thrift.async.TAsyncMethodCall<Void> {
+      private java.lang.String caminho;
+      public carregaGrafo_call(java.lang.String caminho, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.caminho = caminho;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("carregaGrafo", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        carregaGrafo_args args = new carregaGrafo_args();
+        args.setCaminho(caminho);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public Void getResult() throws org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new java.lang.IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return null;
+      }
+    }
+
+    public void salvaGrafo(java.lang.String caminho, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      salvaGrafo_call method_call = new salvaGrafo_call(caminho, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class salvaGrafo_call extends org.apache.thrift.async.TAsyncMethodCall<Void> {
+      private java.lang.String caminho;
+      public salvaGrafo_call(java.lang.String caminho, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.caminho = caminho;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("salvaGrafo", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        salvaGrafo_args args = new salvaGrafo_args();
+        args.setCaminho(caminho);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public Void getResult() throws org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new java.lang.IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return null;
+      }
     }
 
     public void criarVertice(int nome, int cor, java.lang.String descricao, double peso, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
@@ -1061,6 +1173,8 @@ public class Operations {
     }
 
     private static <I extends Iface> java.util.Map<java.lang.String,  org.apache.thrift.ProcessFunction<I, ? extends org.apache.thrift.TBase>> getProcessMap(java.util.Map<java.lang.String, org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> processMap) {
+      processMap.put("carregaGrafo", new carregaGrafo());
+      processMap.put("salvaGrafo", new salvaGrafo());
       processMap.put("criarVertice", new criarVertice());
       processMap.put("criarAresta", new criarAresta());
       processMap.put("delVertice", new delVertice());
@@ -1078,6 +1192,46 @@ public class Operations {
       processMap.put("listarVizinhosVertice", new listarVizinhosVertice());
       processMap.put("menorCaminho", new menorCaminho());
       return processMap;
+    }
+
+    public static class carregaGrafo<I extends Iface> extends org.apache.thrift.ProcessFunction<I, carregaGrafo_args> {
+      public carregaGrafo() {
+        super("carregaGrafo");
+      }
+
+      public carregaGrafo_args getEmptyArgsInstance() {
+        return new carregaGrafo_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public carregaGrafo_result getResult(I iface, carregaGrafo_args args) throws org.apache.thrift.TException {
+        carregaGrafo_result result = new carregaGrafo_result();
+        iface.carregaGrafo(args.caminho);
+        return result;
+      }
+    }
+
+    public static class salvaGrafo<I extends Iface> extends org.apache.thrift.ProcessFunction<I, salvaGrafo_args> {
+      public salvaGrafo() {
+        super("salvaGrafo");
+      }
+
+      public salvaGrafo_args getEmptyArgsInstance() {
+        return new salvaGrafo_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public salvaGrafo_result getResult(I iface, salvaGrafo_args args) throws org.apache.thrift.TException {
+        salvaGrafo_result result = new salvaGrafo_result();
+        iface.salvaGrafo(args.caminho);
+        return result;
+      }
     }
 
     public static class criarVertice<I extends Iface> extends org.apache.thrift.ProcessFunction<I, criarVertice_args> {
@@ -1420,6 +1574,8 @@ public class Operations {
     }
 
     private static <I extends AsyncIface> java.util.Map<java.lang.String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase,?>> getProcessMap(java.util.Map<java.lang.String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase, ?>> processMap) {
+      processMap.put("carregaGrafo", new carregaGrafo());
+      processMap.put("salvaGrafo", new salvaGrafo());
       processMap.put("criarVertice", new criarVertice());
       processMap.put("criarAresta", new criarAresta());
       processMap.put("delVertice", new delVertice());
@@ -1437,6 +1593,126 @@ public class Operations {
       processMap.put("listarVizinhosVertice", new listarVizinhosVertice());
       processMap.put("menorCaminho", new menorCaminho());
       return processMap;
+    }
+
+    public static class carregaGrafo<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, carregaGrafo_args, Void> {
+      public carregaGrafo() {
+        super("carregaGrafo");
+      }
+
+      public carregaGrafo_args getEmptyArgsInstance() {
+        return new carregaGrafo_args();
+      }
+
+      public org.apache.thrift.async.AsyncMethodCallback<Void> getResultHandler(final org.apache.thrift.server.AbstractNonblockingServer.AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new org.apache.thrift.async.AsyncMethodCallback<Void>() { 
+          public void onComplete(Void o) {
+            carregaGrafo_result result = new carregaGrafo_result();
+            try {
+              fcall.sendResponse(fb, result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+            } catch (org.apache.thrift.transport.TTransportException e) {
+              _LOGGER.error("TTransportException writing to internal frame buffer", e);
+              fb.close();
+            } catch (java.lang.Exception e) {
+              _LOGGER.error("Exception writing to internal frame buffer", e);
+              onError(e);
+            }
+          }
+          public void onError(java.lang.Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TSerializable msg;
+            carregaGrafo_result result = new carregaGrafo_result();
+            if (e instanceof org.apache.thrift.transport.TTransportException) {
+              _LOGGER.error("TTransportException inside handler", e);
+              fb.close();
+              return;
+            } else if (e instanceof org.apache.thrift.TApplicationException) {
+              _LOGGER.error("TApplicationException inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TApplicationException)e;
+            } else {
+              _LOGGER.error("Exception inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+            } catch (java.lang.Exception ex) {
+              _LOGGER.error("Exception writing to internal frame buffer", ex);
+              fb.close();
+            }
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, carregaGrafo_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws org.apache.thrift.TException {
+        iface.carregaGrafo(args.caminho,resultHandler);
+      }
+    }
+
+    public static class salvaGrafo<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, salvaGrafo_args, Void> {
+      public salvaGrafo() {
+        super("salvaGrafo");
+      }
+
+      public salvaGrafo_args getEmptyArgsInstance() {
+        return new salvaGrafo_args();
+      }
+
+      public org.apache.thrift.async.AsyncMethodCallback<Void> getResultHandler(final org.apache.thrift.server.AbstractNonblockingServer.AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new org.apache.thrift.async.AsyncMethodCallback<Void>() { 
+          public void onComplete(Void o) {
+            salvaGrafo_result result = new salvaGrafo_result();
+            try {
+              fcall.sendResponse(fb, result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+            } catch (org.apache.thrift.transport.TTransportException e) {
+              _LOGGER.error("TTransportException writing to internal frame buffer", e);
+              fb.close();
+            } catch (java.lang.Exception e) {
+              _LOGGER.error("Exception writing to internal frame buffer", e);
+              onError(e);
+            }
+          }
+          public void onError(java.lang.Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TSerializable msg;
+            salvaGrafo_result result = new salvaGrafo_result();
+            if (e instanceof org.apache.thrift.transport.TTransportException) {
+              _LOGGER.error("TTransportException inside handler", e);
+              fb.close();
+              return;
+            } else if (e instanceof org.apache.thrift.TApplicationException) {
+              _LOGGER.error("TApplicationException inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TApplicationException)e;
+            } else {
+              _LOGGER.error("Exception inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+            } catch (java.lang.Exception ex) {
+              _LOGGER.error("Exception writing to internal frame buffer", ex);
+              fb.close();
+            }
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, salvaGrafo_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws org.apache.thrift.TException {
+        iface.salvaGrafo(args.caminho,resultHandler);
+      }
     }
 
     public static class criarVertice<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, criarVertice_args, java.lang.Boolean> {
@@ -2422,6 +2698,1230 @@ public class Operations {
       }
     }
 
+  }
+
+  public static class carregaGrafo_args implements org.apache.thrift.TBase<carregaGrafo_args, carregaGrafo_args._Fields>, java.io.Serializable, Cloneable, Comparable<carregaGrafo_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("carregaGrafo_args");
+
+    private static final org.apache.thrift.protocol.TField CAMINHO_FIELD_DESC = new org.apache.thrift.protocol.TField("caminho", org.apache.thrift.protocol.TType.STRING, (short)1);
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new carregaGrafo_argsStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new carregaGrafo_argsTupleSchemeFactory();
+
+    public java.lang.String caminho; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      CAMINHO((short)1, "caminho");
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // CAMINHO
+            return CAMINHO;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.CAMINHO, new org.apache.thrift.meta_data.FieldMetaData("caminho", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(carregaGrafo_args.class, metaDataMap);
+    }
+
+    public carregaGrafo_args() {
+    }
+
+    public carregaGrafo_args(
+      java.lang.String caminho)
+    {
+      this();
+      this.caminho = caminho;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public carregaGrafo_args(carregaGrafo_args other) {
+      if (other.isSetCaminho()) {
+        this.caminho = other.caminho;
+      }
+    }
+
+    public carregaGrafo_args deepCopy() {
+      return new carregaGrafo_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.caminho = null;
+    }
+
+    public java.lang.String getCaminho() {
+      return this.caminho;
+    }
+
+    public carregaGrafo_args setCaminho(java.lang.String caminho) {
+      this.caminho = caminho;
+      return this;
+    }
+
+    public void unsetCaminho() {
+      this.caminho = null;
+    }
+
+    /** Returns true if field caminho is set (has been assigned a value) and false otherwise */
+    public boolean isSetCaminho() {
+      return this.caminho != null;
+    }
+
+    public void setCaminhoIsSet(boolean value) {
+      if (!value) {
+        this.caminho = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, java.lang.Object value) {
+      switch (field) {
+      case CAMINHO:
+        if (value == null) {
+          unsetCaminho();
+        } else {
+          setCaminho((java.lang.String)value);
+        }
+        break;
+
+      }
+    }
+
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      case CAMINHO:
+        return getCaminho();
+
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      case CAMINHO:
+        return isSetCaminho();
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof carregaGrafo_args)
+        return this.equals((carregaGrafo_args)that);
+      return false;
+    }
+
+    public boolean equals(carregaGrafo_args that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      boolean this_present_caminho = true && this.isSetCaminho();
+      boolean that_present_caminho = true && that.isSetCaminho();
+      if (this_present_caminho || that_present_caminho) {
+        if (!(this_present_caminho && that_present_caminho))
+          return false;
+        if (!this.caminho.equals(that.caminho))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      hashCode = hashCode * 8191 + ((isSetCaminho()) ? 131071 : 524287);
+      if (isSetCaminho())
+        hashCode = hashCode * 8191 + caminho.hashCode();
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(carregaGrafo_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = java.lang.Boolean.valueOf(isSetCaminho()).compareTo(other.isSetCaminho());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetCaminho()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.caminho, other.caminho);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+    }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("carregaGrafo_args(");
+      boolean first = true;
+
+      sb.append("caminho:");
+      if (this.caminho == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.caminho);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class carregaGrafo_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public carregaGrafo_argsStandardScheme getScheme() {
+        return new carregaGrafo_argsStandardScheme();
+      }
+    }
+
+    private static class carregaGrafo_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<carregaGrafo_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, carregaGrafo_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // CAMINHO
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.caminho = iprot.readString();
+                struct.setCaminhoIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, carregaGrafo_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.caminho != null) {
+          oprot.writeFieldBegin(CAMINHO_FIELD_DESC);
+          oprot.writeString(struct.caminho);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class carregaGrafo_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public carregaGrafo_argsTupleScheme getScheme() {
+        return new carregaGrafo_argsTupleScheme();
+      }
+    }
+
+    private static class carregaGrafo_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<carregaGrafo_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, carregaGrafo_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet optionals = new java.util.BitSet();
+        if (struct.isSetCaminho()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetCaminho()) {
+          oprot.writeString(struct.caminho);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, carregaGrafo_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.caminho = iprot.readString();
+          struct.setCaminhoIsSet(true);
+        }
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
+  }
+
+  public static class carregaGrafo_result implements org.apache.thrift.TBase<carregaGrafo_result, carregaGrafo_result._Fields>, java.io.Serializable, Cloneable, Comparable<carregaGrafo_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("carregaGrafo_result");
+
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new carregaGrafo_resultStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new carregaGrafo_resultTupleSchemeFactory();
+
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+;
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(carregaGrafo_result.class, metaDataMap);
+    }
+
+    public carregaGrafo_result() {
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public carregaGrafo_result(carregaGrafo_result other) {
+    }
+
+    public carregaGrafo_result deepCopy() {
+      return new carregaGrafo_result(this);
+    }
+
+    @Override
+    public void clear() {
+    }
+
+    public void setFieldValue(_Fields field, java.lang.Object value) {
+      switch (field) {
+      }
+    }
+
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof carregaGrafo_result)
+        return this.equals((carregaGrafo_result)that);
+      return false;
+    }
+
+    public boolean equals(carregaGrafo_result that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(carregaGrafo_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+      }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("carregaGrafo_result(");
+      boolean first = true;
+
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class carregaGrafo_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public carregaGrafo_resultStandardScheme getScheme() {
+        return new carregaGrafo_resultStandardScheme();
+      }
+    }
+
+    private static class carregaGrafo_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<carregaGrafo_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, carregaGrafo_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, carregaGrafo_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class carregaGrafo_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public carregaGrafo_resultTupleScheme getScheme() {
+        return new carregaGrafo_resultTupleScheme();
+      }
+    }
+
+    private static class carregaGrafo_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<carregaGrafo_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, carregaGrafo_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, carregaGrafo_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
+  }
+
+  public static class salvaGrafo_args implements org.apache.thrift.TBase<salvaGrafo_args, salvaGrafo_args._Fields>, java.io.Serializable, Cloneable, Comparable<salvaGrafo_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("salvaGrafo_args");
+
+    private static final org.apache.thrift.protocol.TField CAMINHO_FIELD_DESC = new org.apache.thrift.protocol.TField("caminho", org.apache.thrift.protocol.TType.STRING, (short)1);
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new salvaGrafo_argsStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new salvaGrafo_argsTupleSchemeFactory();
+
+    public java.lang.String caminho; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      CAMINHO((short)1, "caminho");
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // CAMINHO
+            return CAMINHO;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.CAMINHO, new org.apache.thrift.meta_data.FieldMetaData("caminho", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(salvaGrafo_args.class, metaDataMap);
+    }
+
+    public salvaGrafo_args() {
+    }
+
+    public salvaGrafo_args(
+      java.lang.String caminho)
+    {
+      this();
+      this.caminho = caminho;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public salvaGrafo_args(salvaGrafo_args other) {
+      if (other.isSetCaminho()) {
+        this.caminho = other.caminho;
+      }
+    }
+
+    public salvaGrafo_args deepCopy() {
+      return new salvaGrafo_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.caminho = null;
+    }
+
+    public java.lang.String getCaminho() {
+      return this.caminho;
+    }
+
+    public salvaGrafo_args setCaminho(java.lang.String caminho) {
+      this.caminho = caminho;
+      return this;
+    }
+
+    public void unsetCaminho() {
+      this.caminho = null;
+    }
+
+    /** Returns true if field caminho is set (has been assigned a value) and false otherwise */
+    public boolean isSetCaminho() {
+      return this.caminho != null;
+    }
+
+    public void setCaminhoIsSet(boolean value) {
+      if (!value) {
+        this.caminho = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, java.lang.Object value) {
+      switch (field) {
+      case CAMINHO:
+        if (value == null) {
+          unsetCaminho();
+        } else {
+          setCaminho((java.lang.String)value);
+        }
+        break;
+
+      }
+    }
+
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      case CAMINHO:
+        return getCaminho();
+
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      case CAMINHO:
+        return isSetCaminho();
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof salvaGrafo_args)
+        return this.equals((salvaGrafo_args)that);
+      return false;
+    }
+
+    public boolean equals(salvaGrafo_args that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      boolean this_present_caminho = true && this.isSetCaminho();
+      boolean that_present_caminho = true && that.isSetCaminho();
+      if (this_present_caminho || that_present_caminho) {
+        if (!(this_present_caminho && that_present_caminho))
+          return false;
+        if (!this.caminho.equals(that.caminho))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      hashCode = hashCode * 8191 + ((isSetCaminho()) ? 131071 : 524287);
+      if (isSetCaminho())
+        hashCode = hashCode * 8191 + caminho.hashCode();
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(salvaGrafo_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = java.lang.Boolean.valueOf(isSetCaminho()).compareTo(other.isSetCaminho());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetCaminho()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.caminho, other.caminho);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+    }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("salvaGrafo_args(");
+      boolean first = true;
+
+      sb.append("caminho:");
+      if (this.caminho == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.caminho);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class salvaGrafo_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public salvaGrafo_argsStandardScheme getScheme() {
+        return new salvaGrafo_argsStandardScheme();
+      }
+    }
+
+    private static class salvaGrafo_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<salvaGrafo_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, salvaGrafo_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // CAMINHO
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.caminho = iprot.readString();
+                struct.setCaminhoIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, salvaGrafo_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.caminho != null) {
+          oprot.writeFieldBegin(CAMINHO_FIELD_DESC);
+          oprot.writeString(struct.caminho);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class salvaGrafo_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public salvaGrafo_argsTupleScheme getScheme() {
+        return new salvaGrafo_argsTupleScheme();
+      }
+    }
+
+    private static class salvaGrafo_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<salvaGrafo_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, salvaGrafo_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet optionals = new java.util.BitSet();
+        if (struct.isSetCaminho()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetCaminho()) {
+          oprot.writeString(struct.caminho);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, salvaGrafo_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.caminho = iprot.readString();
+          struct.setCaminhoIsSet(true);
+        }
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
+  }
+
+  public static class salvaGrafo_result implements org.apache.thrift.TBase<salvaGrafo_result, salvaGrafo_result._Fields>, java.io.Serializable, Cloneable, Comparable<salvaGrafo_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("salvaGrafo_result");
+
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new salvaGrafo_resultStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new salvaGrafo_resultTupleSchemeFactory();
+
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+;
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(salvaGrafo_result.class, metaDataMap);
+    }
+
+    public salvaGrafo_result() {
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public salvaGrafo_result(salvaGrafo_result other) {
+    }
+
+    public salvaGrafo_result deepCopy() {
+      return new salvaGrafo_result(this);
+    }
+
+    @Override
+    public void clear() {
+    }
+
+    public void setFieldValue(_Fields field, java.lang.Object value) {
+      switch (field) {
+      }
+    }
+
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof salvaGrafo_result)
+        return this.equals((salvaGrafo_result)that);
+      return false;
+    }
+
+    public boolean equals(salvaGrafo_result that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(salvaGrafo_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+      }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("salvaGrafo_result(");
+      boolean first = true;
+
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class salvaGrafo_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public salvaGrafo_resultStandardScheme getScheme() {
+        return new salvaGrafo_resultStandardScheme();
+      }
+    }
+
+    private static class salvaGrafo_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<salvaGrafo_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, salvaGrafo_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, salvaGrafo_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class salvaGrafo_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public salvaGrafo_resultTupleScheme getScheme() {
+        return new salvaGrafo_resultTupleScheme();
+      }
+    }
+
+    private static class salvaGrafo_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<salvaGrafo_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, salvaGrafo_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, salvaGrafo_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
   }
 
   public static class criarVertice_args implements org.apache.thrift.TBase<criarVertice_args, criarVertice_args._Fields>, java.io.Serializable, Cloneable, Comparable<criarVertice_args>   {

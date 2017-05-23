@@ -4,6 +4,11 @@ import models.*;
 
 import org.apache.thrift.TException;
 
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -17,8 +22,43 @@ public class SDDBHandler implements Operations.Iface {
     //private ArrayList<Grafo> grafos = new ArrayList<Grafo>();
     private Grafo G = new Grafo(new ArrayList<Vertice>(),new ArrayList<Aresta>());
 
+    //Parte nova
     @Override
-    public boolean criarVertice(int nome, int cor, String descricao, double peso){
+    public synchronized void carregaGrafo(String caminho){
+       Object aux = null;
+
+        try{
+            FileInputStream restFile = new FileInputStream(caminho);
+            ObjectInputStream stream = new ObjectInputStream(restFile);
+
+            aux = stream.readObject();
+            if(aux != null){
+                G = (Grafo)aux;
+            }
+            stream.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    //Cria um novo grafo caso nenhum tenha sido salvo (ou inicializado ainda)
+    //Neste caso a função é usada de inicio (tanto parar inicializar, quanto para salvar)
+    @Override
+    public synchronized void salvaGrafo(String caminho){
+            try{
+                FileOutputStream saveFile = new FileOutputStream(caminho);
+                ObjectOutputStream stream = new ObjectOutputStream(saveFile);
+
+                stream.writeObject(G);
+                stream.close();
+            } catch (IOException exc){
+                exc.printStackTrace();
+            }
+        }
+
+    //Fim parte nova
+    @Override
+    public synchronized boolean criarVertice(int nome, int cor, String descricao, double peso){
         if(G.getV() != null) {
             for (Vertice v : G.V){
                 if(v.nome == nome){ //Nome já existente
@@ -31,7 +71,7 @@ public class SDDBHandler implements Operations.Iface {
     }
 
     @Override
-    public boolean criarAresta(int v1, int v2, double peso, int flag, String descricao){
+    public synchronized boolean criarAresta(int v1, int v2, double peso, int flag, String descricao){
         int criaControl = 0;
         for(Vertice v:G.V){ //Checagem se ambos os vértices existem
             if(v.nome == v1 || v.nome == v2){
@@ -61,7 +101,7 @@ public class SDDBHandler implements Operations.Iface {
     }*/
 
     @Override
-    public boolean delVertice(int nome){
+    public synchronized boolean delVertice(int nome){
         //for(Aresta a:G.A) {
         for(int i=G.getA().size()-1;i>=0;i--){
             if (G.getA().get(i).v1 == nome || G.getA().get(i).v2 == nome) {
@@ -81,7 +121,7 @@ public class SDDBHandler implements Operations.Iface {
     }
 
     @Override
-    public boolean delAresta(int v1, int v2){
+    public synchronized boolean delAresta(int v1, int v2){
         for(Aresta a:G.A){
             if(a.v1 == v1 && a.v2 == v2){
                 G.A.remove(a);
@@ -92,7 +132,7 @@ public class SDDBHandler implements Operations.Iface {
     }
 
     @Override
-    public boolean updateVertice(int nomeUp, Vertice V){
+    public synchronized boolean updateVertice(int nomeUp, Vertice V){
         if(V == null){
             return false;
         }
@@ -120,7 +160,7 @@ public class SDDBHandler implements Operations.Iface {
     }
 
     @Override
-    public boolean updateAresta(int nomeV1, int nomeV2, Aresta A){
+    public synchronized boolean updateAresta(int nomeV1, int nomeV2, Aresta A){
         if(A == null){
             return false;
         }

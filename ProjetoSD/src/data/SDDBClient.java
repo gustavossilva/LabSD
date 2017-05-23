@@ -28,33 +28,47 @@ public class SDDBClient {
 
             int menu = 0;
             int v1,v2,cor,v3,v4;
-            String descricao;
+            String descricao,arquivo;
             double peso;
             Scanner leitura = new Scanner(System.in);
 
             //Operações
-            while(menu!=14) {
+            while(menu!=16) {
                 //Reinicialização das variáveis para evitar erros.
-                v1 = 0;v2 = 0;v3 = 0; v4 =0; cor = 0; peso = 0; descricao = "";
+                v1 = 0;v2 = 0;v3 = 0; v4 =0; cor = 0; peso = 0; descricao = ""; arquivo = "";
                 System.out.println("Bem-vindo ao BD de Grafos, selecione uma função pelo número: ");
                 System.out.println("|||||||||||||||||||||||||");
-                System.out.println("1. Inserir Vértice");
-                System.out.println("2. Inserir Aresta");
-                System.out.println("3. Remover Vértice");
-                System.out.println("4. Remover Arestas");
-                System.out.println("5. Atualizar Vértice");
-                System.out.println("6. Atualizar Arestas");
-                System.out.println("7. Exibir Grafo");
-                System.out.println("8. Exibir Vertices");
-                System.out.println("9. Exibir Arestas");
-                System.out.println("10. Exibir Vértice de uma aresta");
-                System.out.println("11. Exibir Arestas de um vértice");
-                System.out.println("12. Listar Vértices vizinhos de um vértice");
-                System.out.println("13. Menor caminho entre 2 vértices");
-                System.out.println("14. Sair");
+                System.out.println("1. Carregar Grafo");
+                System.out.println("2. Salvar Grafo");
+                System.out.println("3. Inserir Vértice");
+                System.out.println("4. Inserir Aresta");
+                System.out.println("5. Remover Vértice");
+                System.out.println("6. Remover Arestas");
+                System.out.println("7. Atualizar Vértice");
+                System.out.println("8. Atualizar Arestas");
+                System.out.println("9. Exibir Grafo");
+                System.out.println("10. Exibir Vertices");
+                System.out.println("11. Exibir Arestas");
+                System.out.println("12. Exibir Vértice de uma aresta");
+                System.out.println("13. Exibir Arestas de um vértice");
+                System.out.println("14. Listar Vértices vizinhos de um vértice");
+                System.out.println("15. Menor caminho entre 2 vértices");
+                System.out.println("16. Sair");
                 menu = leitura.nextInt();
                 switch (menu) {
                     case 1:
+                        System.out.println("Digite o nome do arquivo para carregar: ");
+                        leitura.nextLine();
+                        arquivo = leitura.nextLine();
+                        client.carregaGrafo(arquivo);
+                        break;
+                    case 2:
+                        System.out.println("Digite o nome do arquivo para salvar: ");
+                        leitura.nextLine();
+                        arquivo = leitura.nextLine();
+                        client.salvaGrafo(arquivo);
+                        break;
+                    case 3:
                         System.out.println("Nome(Número) do vértice: ");
                         v1 = leitura.nextInt();
                         System.out.println("Entre com a cor: ");
@@ -71,7 +85,7 @@ public class SDDBClient {
                             System.out.println("Erro ao criar vértice!");
                         }
                         break;
-                    case 2:
+                    case 4:
                         System.out.println("Entre com o vertice 1 da aresta: ");
                         v1 = leitura.nextInt();
                         System.out.println("Entre com o vertice 2 da aresta: ");
@@ -90,7 +104,7 @@ public class SDDBClient {
                             System.out.println("Erro ao criar aresta!");
                         }
                         break;
-                    case 3:
+                    case 5:
                         System.out.println("Entre com o vértice que deseja remover: ");
                         v1 = leitura.nextInt();
                         if(client.delVertice(v1)){
@@ -100,7 +114,7 @@ public class SDDBClient {
                             System.out.println("Erro ao remover...");
                         }
                         break;
-                    case 4:
+                    case 6:
                         System.out.println("Entre com o vertice 1 da aresta que será removida: ");
                         v1 = leitura.nextInt();
                         System.out.println("Entre com o vertice 2: ");
@@ -112,7 +126,7 @@ public class SDDBClient {
                             System.out.println("Erro ao remover aresta!");
                         }
                         break;
-                    case 5:
+                    case 7:
                         System.out.println("Número do vértice a ser atualizado: ");
                         v1 = leitura.nextInt();
                         System.out.println("Novo número: ");
@@ -131,7 +145,7 @@ public class SDDBClient {
                             System.out.println("Erro ao atualizar!");
                         }
                         break;
-                    case 6:
+                    case 8:
                         System.out.println("Vertice 1 da aresta que será atualizada: ");
                         v1 = leitura.nextInt();
                         System.out.println("Vertice 2: ");
@@ -154,16 +168,16 @@ public class SDDBClient {
                             System.out.println("Erro ao atualizar!");
                         }
                         break;
-                    case 7:
+                    case 9:
                         System.out.println(client.exibirGrafo());
                         break;
-                    case 8:
+                    case 10:
                         System.out.println(client.exibirVertice());
                         break;
-                    case 9:
+                    case 11:
                         System.out.println(client.exibirAresta());
                         break;
-                    case 10:
+                    case 12:
                         System.out.println("Qual aresta deseja visualizar os vértices? ");
                         System.out.println("Vertíce 1: ");
                         v1 = leitura.nextInt();
@@ -171,23 +185,23 @@ public class SDDBClient {
                         v2 = leitura.nextInt();
                         System.out.println(client.listarVerticesArestas(v1,v2));
                         break;
-                    case 11:
+                    case 13:
                         System.out.println("Digite qual vértice deseja visualizar as arestas: ");
                         v1 = leitura.nextInt();
                         System.out.println(client.listarArestasVertice(v1));
                         break;
-                    case 12:
+                    case 14:
                         System.out.println("Digite o numero do vertice que deseja verificar os vizinhos: ");
                         v1 = leitura.nextInt();
                         System.out.println(client.listarVizinhosVertice(v1));
                         break;
-                    case 13:
+                    case 15:
                         System.out.println("Digite o primeiro vértice do caminho: ");
                         v1 = leitura.nextInt();
                         System.out.println("Digite o segundo vértice do caminho: ");
                         v2 = leitura.nextInt();
                         System.out.println(client.menorCaminho(v1,v2));
-                    case 14:
+                    case 16:
                         System.out.println("Saindo do sistema e desconectando do servidor...");
                         break;
                     default:
@@ -198,7 +212,6 @@ public class SDDBClient {
                 }catch (InterruptedException e){
                     e.printStackTrace();
                 }
-                leitura.nextLine();
             }
             transport.close();
         }catch (TException x){
