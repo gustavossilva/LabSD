@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
+//Receiver
 public class ExercicioLab3Receiver {
 	public static void main(String[] args) {
     	MulticastSocket socket = null;
