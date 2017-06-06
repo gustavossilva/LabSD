@@ -2,7 +2,6 @@ import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
-
 //Sender
 public class ExercicioLab3Sender {
 	public static void main(String[] args) {
@@ -13,18 +12,18 @@ public class ExercicioLab3Sender {
 		byte[] outBuf;
 		final int SENDPORT = 8888;
 		Scanner leitura = new Scanner(System.in);
- 
-    	try {	
+
+		try {	
 			socket = new MulticastSocket(8887);
 			InetAddress address = InetAddress.getByName("224.2.2.3");
 			socket.joinGroup(address);
 			String msg;
 			String receivemsg;
- 
+			
 			while (true) {
 				//Envio de msg
-			  	System.out.print("Digite sua mensagem: ");
-			  	msg = leitura.nextLine();
+				System.out.print("Digite sua mensagem: ");
+				msg = leitura.nextLine();
 				outBuf = msg.getBytes();
 				outPacket = new DatagramPacket(outBuf, outBuf.length, address, SENDPORT);
 				socket.send(outPacket);
@@ -33,15 +32,14 @@ public class ExercicioLab3Sender {
 				socket.receive(inPacket);
 				receivemsg = new String(inBuf, 0, inPacket.getLength());
 				System.out.println("De " + inPacket.getAddress() + " Msg : " + receivemsg);
-
 				try {
 					Thread.sleep(500);
 				}catch (InterruptedException ie) {
 
-		    	}
+				}
 			}
 		}catch (IOException ioe) {
 			System.out.println(ioe);
-    	}
-  	}
+		}
+	}
 }
