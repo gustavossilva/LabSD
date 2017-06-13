@@ -1,9 +1,5 @@
 namespace java models
 
-exception KeyNotFound
-{
-}
-
 struct Vertice {
 	1:i32 nome,
 	2:i32 cor,
@@ -19,10 +15,10 @@ struct Aresta {
 	5:string descricao
 }
 
-struct Grafo {
+/*struct Grafo {
     1:list<Vertice> V,
     2:list<Aresta> A
-}
+}*/
 
 service Operations {
     void carregaGrafo(1:string caminho),
