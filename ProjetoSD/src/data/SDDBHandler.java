@@ -9,9 +9,10 @@ import java.io.ObjectOutputStream;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
 /**
@@ -293,4 +294,102 @@ public class SDDBHandler implements Operations.Iface {
     //TODO Mudar a flag do direcionamento dependendo do update, ou da criação de uma nova aresta que cria um bi-direcionamento
     //TODO tratar alguns minor bugs
 
+}
+
+class RWSyncHashSet<E> implements Set<E> {
+    private final HashSet<E> s = new HashSet<>();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final Lock read = lock.readLock();
+    private final Lock write = lock.writeLock();
+
+    @Override
+    public int size() {
+        read.lock();
+        try { return s.size(); }
+        finally { read.unlock(); }
+    }
+
+    @Override
+    public boolean isEmpty() {
+        read.lock();
+        try { return s.isEmpty(); }
+        finally { read.unlock(); }
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        read.lock();
+        try { return s.contains(o); }
+        finally { read.unlock(); }
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        read.lock();
+        try { return s.iterator(); }
+        finally { read.unlock(); }
+    }
+
+    @Override
+    public Object[] toArray() {
+        read.lock();
+        try { return s.toArray(); }
+        finally { read.unlock(); }
+    }
+
+    @Override
+    public <T> T[] toArray(T[] ts) {
+        read.lock();
+        try { return s.toArray(ts); }
+        finally { read.unlock(); }
+    }
+
+    @Override
+    public boolean add(E e) {
+        write.lock();
+        try { return s.add(e); }
+        finally { write.unlock(); }
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        write.lock();
+        try { return s.remove(o); }
+        finally { write.unlock(); }
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> collection) {
+        read.lock();
+        try { return s.containsAll(collection); }
+        finally { read.unlock(); }
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends E> collection) {
+        write.lock();
+        try { return s.addAll(collection); }
+        finally { write.unlock(); }
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> collection) {
+        write.lock();
+        try { return s.retainAll(collection); }
+        finally { write.unlock(); }
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> collection) {
+        write.lock();
+        try { return s.removeAll(collection); }
+        finally { write.unlock(); }
+    }
+
+    @Override
+    public void clear() {
+        write.lock();
+        try { s.clear(); }
+        finally { write.unlock(); }
+    }
 }
