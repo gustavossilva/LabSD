@@ -5,10 +5,13 @@ import models.*;
 import org.apache.thrift.TException;
 
 import java.io.*;
+import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import static java.lang.Math.abs;
 
 
 /**
@@ -63,6 +66,17 @@ public class SDDBHandler implements Operations.Iface {
     //Fim parte nova
     @Override
     public boolean criarVertice(int nome, int cor, String descricao, double peso){
+        MessageDigest md;
+        byte[] bytesOfMessage = null,theDigest = null;
+        try{
+            md = MessageDigest.getInstance("SHA");
+            bytesOfMessage = Integer.toString(nome).getBytes("UTF-8");
+            theDigest = md.digest(bytesOfMessage);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        int teste = abs(theDigest[theDigest.length-1]%3);
+        System.out.println(Integer.toString(teste));
         Vertice v = new Vertice(nome,cor,descricao,peso);
         if(setV != null) {
             if(setV.contains(v)){
