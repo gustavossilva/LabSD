@@ -7,6 +7,7 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
+import org.apache.thrift.transport.TTransportException;
 
 import java.io.*;
 import java.security.MessageDigest;
@@ -22,30 +23,70 @@ import static java.lang.Math.abs;
 /**
  * Created by gustavovm on 5/21/17.
  */
-public class SDDBHandler implements Operations.Iface {
+public class SDDBHandler implements Operations.Iface, Closeable {
     //private ArrayList<Grafo> grafos = new ArrayList<Grafo>();
     //private Grafo G = new Grafo(new ArrayList<Vertice>(),new ArrayList<Aresta>());
     private RWSyncHashSet<Aresta> setE = new RWSyncHashSet<>();
     private RWSyncHashSet<Vertice> setV = new RWSyncHashSet<>();
     private final Operations.Client[] clients;
+    private final TTransport[] transports;
     private final int id;
 
     public SDDBHandler(int id, int total) {
         this.clients = new Operations.Client[total];
+        this.transports = new TTransport[total];
         this.id = id;
 
 //        System.out.println(Thread.currentThread().getName() + ": handler " + id);
 
         for (int i = 0; i < this.clients.length; i++) {
-            if (i != id) {
-                final TTransport transport = new TSocket("localhost", SDDBServer.BASE_PORT + i);
-                final TProtocol protocol = new TBinaryProtocol(transport);
+            if (i != this.id) {
+                this.transports[i] = new TSocket("localhost", SDDBServer.BASE_PORT + i);
+                final TProtocol protocol = new TBinaryProtocol(this.transports[i]);
                 this.clients[i] = new Operations.Client(protocol);
             }
 
-            else
+            else {
+                this.transports[i] = null;
                 this.clients[i] = null;
+            }
         }
+    }
+
+    private int distribute(int[] is) {
+        MessageDigest md;
+        byte[] bytesOfMessage = null,theDigest = null;
+        try{
+            md = MessageDigest.getInstance("SHA-1");
+
+            for (int i : is) {
+                bytesOfMessage = Integer.toString(i).getBytes("UTF-8");
+                md.update(bytesOfMessage);
+            }
+
+            theDigest = md.digest();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        int teste = abs(theDigest[theDigest.length-1]%clients.length);
+//        System.out.println("[SHA-1] " + teste);
+        return teste;
+    }
+
+    private boolean startTransport(int i) {
+        if ((this.transports[i] != null) && ( !this.transports[i].isOpen() )) {
+            try {
+                this.transports[i].open();
+                return true;
+            }
+
+            catch (TTransportException e) {
+                return false;
+            }
+        }
+
+        else
+            return true;
     }
 
     //Parte nova
@@ -90,26 +131,32 @@ public class SDDBHandler implements Operations.Iface {
     //Fim parte nova
     @Override
     public boolean criarVertice(int nome, int cor, String descricao, double peso){
-        MessageDigest md;
-        byte[] bytesOfMessage = null,theDigest = null;
-        try{
-            md = MessageDigest.getInstance("SHA");
-            bytesOfMessage = Integer.toString(nome).getBytes("UTF-8");
-            theDigest = md.digest(bytesOfMessage);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        int teste = abs(theDigest[theDigest.length-1]%clients.length);
-        System.out.println(Integer.toString(teste));
+        int responsible = distribute(new int[]{nome});
         Vertice v = new Vertice(nome,cor,descricao,peso);
-        if(setV != null) {
-            for (Vertice ve : setV){
-                if(ve.nome == nome){ //Nome já existente
-                    return false;
+
+        System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
+
+        if (responsible == this.id) {
+            if (setV != null) {
+                for (Vertice ve : setV) {
+                    if (ve.nome == nome) { //Nome já existente
+                        return false;
+                    }
                 }
+                setV.add(v);
             }
         }
-        setV.add(v);
+
+        else if ( startTransport(responsible) ) {
+            try {
+                return this.clients[responsible].criarVertice(nome, cor, descricao, peso);
+            }
+
+            catch (TException e) {
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -331,6 +378,19 @@ public class SDDBHandler implements Operations.Iface {
     public String menorCaminho(int nomeV1, int nomeV2){
         return "oi";
     }
+
+    @Override
+    public void close() {
+        for (TTransport transport : this.transports) {
+            try {
+                transport.close();
+            }
+
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
     //TODO Adicionar Dijkstra para menor caminho ou algum outro algorítmo
     //TODO Mudar a flag do direcionamento dependendo do update, ou da criação de uma nova aresta que cria um bi-direcionamento
     //TODO tratar alguns minor bugs
@@ -342,6 +402,7 @@ public class SDDBHandler implements Operations.Iface {
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final Lock read = lock.readLock();
     private final Lock write = lock.writeLock();
+
     @Override
     public int size() {
         read.lock();
