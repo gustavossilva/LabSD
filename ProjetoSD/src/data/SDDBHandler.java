@@ -21,11 +21,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class SDDBHandler implements Operations.Iface {
 
     //private ArrayList<Grafo> grafos = new ArrayList<Grafo>();
-    private Grafo G = new Grafo(new ArrayList<Vertice>(),new ArrayList<Aresta>());
+    //private Grafo G = new Grafo(new ArrayList<Vertice>(),new ArrayList<Aresta>());
+    private RWSyncHashSet<Aresta> setE = new RWSyncHashSet<>();
+    private RWSyncHashSet<Vertice> setV = new RWSyncHashSet<>();
 
     //Parte nova
     @Override
-    public synchronized void carregaGrafo(String caminho){
+    public void carregaGrafo(String caminho){
        Object aux = null;
 
         try{
@@ -59,22 +61,26 @@ public class SDDBHandler implements Operations.Iface {
 
     //Fim parte nova
     @Override
-    public synchronized boolean criarVertice(int nome, int cor, String descricao, double peso){
-        if(G.getV() != null) {
-            for (Vertice v : G.V){
+    public boolean criarVertice(int nome, int cor, String descricao, double peso){
+        Vertice v = new Vertice(nome,cor,descricao,peso);
+        if(setV != null) {
+            if(setV.contains(v)){
+                return false;
+            }
+/*            for (Vertice v : setV){
                 if(v.nome == nome){ //Nome já existente
                     return false;
                 }
-            }
+            }*/
         }
-        G.getV().add(new Vertice (nome,cor,descricao,peso));
+        setV.add(v);
         return true;
     }
 
     @Override
-    public synchronized boolean criarAresta(int v1, int v2, double peso, int flag, String descricao){
+    public boolean criarAresta(int v1, int v2, double peso, int flag, String descricao){
         int criaControl = 0;
-        for(Vertice v:G.V){ //Checagem se ambos os vértices existem
+        for(Vertice v:setV){ //Checagem se ambos os vértices existem
             if(v.nome == v1 || v.nome == v2){
                 criaControl++;
             }
@@ -85,10 +91,10 @@ public class SDDBHandler implements Operations.Iface {
                 if (flag == 2) {
                     Aresta aux = new Aresta(v2, v1, peso, flag, descricao);
                     if (!checaIgualdade(aux)) {
-                        G.A.add(aux);
+                        setE.add(aux);
                     }
                 }
-                G.A.add(aux2);
+                setE.add(aux2);
                 return true;
             }
         }
@@ -102,19 +108,19 @@ public class SDDBHandler implements Operations.Iface {
     }*/
 
     @Override
-    public synchronized boolean delVertice(int nome){
+    public boolean delVertice(int nome){
         //for(Aresta a:G.A) {
-        for(int i=G.getA().size()-1;i>=0;i--){
-            if (G.getA().get(i).v1 == nome || G.getA().get(i).v2 == nome) {
-                G.A.remove(i);
-                if(G.A.isEmpty()){
+        for(Aresta a:setE){
+            if(a.v1 == nome || a.v2 == nome){
+                setE.remove(a);
+                if(setE.isEmpty()){
                     break;
                 }
             }
         }
-        for(Vertice v:G.V){
+        for(Vertice v:setV){
             if (v.nome == nome){
-                G.V.remove(v);
+                setV.remove(v);
                 return true;
             }
         }
@@ -122,10 +128,10 @@ public class SDDBHandler implements Operations.Iface {
     }
 
     @Override
-    public synchronized boolean delAresta(int v1, int v2){
-        for(Aresta a:G.A){
+    public boolean delAresta(int v1, int v2){
+        for(Aresta a:setE){
             if(a.v1 == v1 && a.v2 == v2){
-                G.A.remove(a);
+                setE.remove(a);
                 return true;
             }
         }
@@ -133,14 +139,14 @@ public class SDDBHandler implements Operations.Iface {
     }
 
     @Override
-    public synchronized boolean updateVertice(int nomeUp, Vertice V){
+    public boolean updateVertice(int nomeUp, Vertice V){
         if(V == null){
             return false;
         }
         if(nomeUp != V.nome){ //Alteração no Nome do vertice
             return false;
         }
-        for(Vertice v:G.getV()){
+        for(Vertice v:setV){
             if(v.nome == nomeUp){
                 v.cor = V.cor;
                 v.descricao = V.descricao;
@@ -150,9 +156,9 @@ public class SDDBHandler implements Operations.Iface {
         }
         return false; //Não encontrado
     }
-
+    //Checa se já existe a Aresta
     public boolean checaIgualdade(Aresta A){
-        for(Aresta a:G.getA()){
+        for(Aresta a:setE){
             if(a.v1 == A.v1 && a.v2 == A.v2){
                 return true;
             }
@@ -161,22 +167,22 @@ public class SDDBHandler implements Operations.Iface {
     }
 
     @Override
-    public synchronized boolean updateAresta(int nomeV1, int nomeV2, Aresta A){
+    public boolean updateAresta(int nomeV1, int nomeV2, Aresta A){
         if(A == null){
             return false;
         }
         if(nomeV1 != A.v1 || nomeV2 != A.v2){
             return false;
         }
-        for(Aresta a:G.getA()){
+        for(Aresta a:setE){
             if(a.v1 == nomeV1 && a.v2 == nomeV2){
                 a.peso = A.peso;
                 a.flag = A.flag;
                 a.descricao = A.descricao;
-                if(A.flag == 2 && a.flag != 2){
+                if(A.flag == 2 && a.flag != 2){ //Se não era Bidirecional e agora é
                     Aresta aux = new Aresta(A.v2,A.v1,A.peso,A.flag,A.descricao);
                     if(!checaIgualdade(aux)){
-                        G.getA().add(aux);
+                        setE.add(aux);
                     }
                 }
                 return true;
@@ -185,17 +191,16 @@ public class SDDBHandler implements Operations.Iface {
         return false; //Não encontrado
     }
 
+    //Remover do thrift
     @Override
     public boolean updateGrafo(java.util.List<Vertice> V, java.util.List<Aresta> A){
-        G.V = V;
-        G.A = A;
         return true;
     }
 
     @Override
     public Vertice getVertice(int nome){
-        if(!G.getV().isEmpty()) {
-            for (Vertice v : G.getV()) {
+        if(!setV.isEmpty()) {
+            for (Vertice v : setV) {
                 if (v.nome == nome) {
                     return v;
                 }
@@ -206,8 +211,8 @@ public class SDDBHandler implements Operations.Iface {
 
     @Override
     public Aresta getAresta(int v1, int v2){
-        if(!G.getA().isEmpty()) {
-            for (Aresta a : G.getA()) {
+        if(!setE.isEmpty()) {
+            for (Aresta a : setE) {
                 if (a.v1 == v1 && a.v2 == v2) {
                     return a;
                 }
@@ -219,12 +224,12 @@ public class SDDBHandler implements Operations.Iface {
     @Override
     public String exibirGrafo(){
         String exibir = "Vértices: ";
-        for(Vertice v:G.getV()){
+        for(Vertice v:setV){
             exibir = exibir+v.nome+" ,";
         }
         exibir = exibir + "\n";
         exibir = exibir+"Arestas: ";
-        for(Aresta a:G.getA()){
+        for(Aresta a:setE){
             exibir = exibir+"("+a.v1+", "+a.v2+")";
         }
         return exibir;
@@ -233,7 +238,7 @@ public class SDDBHandler implements Operations.Iface {
     @Override
     public String exibirVertice(){
         String exibir = "";
-        for (Vertice v:G.getV()){
+        for (Vertice v:setV){
             exibir = exibir+"Vertice: "+v.nome+" Peso: "+v.peso+" Cor: "+v.cor+" Descrição: "+v.descricao+"\n";
         }
         return exibir;
@@ -242,13 +247,13 @@ public class SDDBHandler implements Operations.Iface {
     @Override
     public String exibirAresta(){
         String exibir = "";
-        for (Aresta a:G.getA()){
+        for (Aresta a:setE){
             exibir = exibir+"Aresta: "+"("+a.v1+", "+a.v2+") Peso: "+a.peso+" Flag: "+a.flag+" Descrição: "+a.descricao+"\n";
         }
         return exibir;
     }
 
-    @Override
+    @Override//Corrigir
     public String listarVerticesArestas(int v1, int v2) {
         return("("+v1+", "+v2+")");
     }
@@ -256,7 +261,7 @@ public class SDDBHandler implements Operations.Iface {
     @Override
     public String listarArestasVertice(int nomeV) {
         String exibir = "Arestas do vértice "+nomeV+": ";
-        for(Aresta a:G.getA()){
+        for(Aresta a:setE){
             if(a.v1 == nomeV || a.v2 == nomeV){
                 exibir = exibir+"("+a.v1+", "+a.v2+")";
             }
@@ -268,7 +273,7 @@ public class SDDBHandler implements Operations.Iface {
     public String listarVizinhosVertice(int nomeV) {
         String exibir = "Vizinhos de "+nomeV+" são: \n";
 
-        for (Aresta a : G.getA()) {
+        for (Aresta a : setE) {
             if(a.v1 == nomeV) {
                 Vertice v = getVertice(a.v2);
                 exibir = exibir+ "Vértice: "+ v.nome +" "+
