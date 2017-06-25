@@ -74,19 +74,20 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     }
 
     private boolean startTransport(int i) {
-        if ((this.transports[i] != null) && ( !this.transports[i].isOpen() )) {
-            try {
-                this.transports[i].open();
-                return true;
-            }
+        if (this.transports[i] == null)
+            return false;
 
-            catch (TTransportException e) {
-                return false;
-            }
+        if ( this.transports[i].isOpen() )
+            return true;
+
+        try {
+            this.transports[i].open();
+            return true;
         }
 
-        else
-            return true;
+        catch (TTransportException e) {
+            return false;
+        }
     }
 
     //Parte nova
@@ -282,13 +283,28 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
     @Override
     public Vertice getVertice(int nome){
-        if(!setV.isEmpty()) {
-            for (Vertice v : setV) {
-                if (v.nome == nome) {
-                    return v;
+        int responsible = distribute(new int[]{nome});
+
+        System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
+
+        if (responsible == this.id) {
+            if (!setV.isEmpty()) {
+                for (Vertice v : setV) {
+                    if (v.nome == nome) {
+                        return v;
+                    }
                 }
             }
         }
+
+        else if ( startTransport(responsible) ) {
+            try {
+                return this.clients[responsible].getVertice(nome);
+            }
+
+            catch (TException e) {}
+        }
+
         return null;
     }
 
@@ -324,6 +340,16 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         for (Vertice v:setV){
             exibir = exibir+"Vertice: "+v.nome+" Peso: "+v.peso+" Cor: "+v.cor+" Descrição: "+v.descricao+"\n";
         }
+
+        for (Operations.Client client : this.clients)
+            if (client != null) {
+                try {
+                    exibir += client.exibirVertice();
+                }
+
+                catch (TException e) {}
+            }
+
         return exibir;
     }
 
