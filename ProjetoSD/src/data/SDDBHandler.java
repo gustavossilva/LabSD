@@ -3,23 +3,47 @@ package data;
 import models.*;
 
 import org.apache.thrift.TException;
+import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TSocket;
+import org.apache.thrift.transport.TTransport;
 
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Handler;
 
 
 /**
  * Created by gustavovm on 5/21/17.
  */
 public class SDDBHandler implements Operations.Iface {
-
     //private ArrayList<Grafo> grafos = new ArrayList<Grafo>();
     //private Grafo G = new Grafo(new ArrayList<Vertice>(),new ArrayList<Aresta>());
     private RWSyncHashSet<Aresta> setE = new RWSyncHashSet<>();
     private RWSyncHashSet<Vertice> setV = new RWSyncHashSet<>();
+    private final Operations.Client[] clients;
+    private final int id;
+
+    public SDDBHandler(int id, int total) {
+        this.clients = new Operations.Client[total];
+        this.id = id;
+
+//        System.out.println(Thread.currentThread().getName() + ": handler " + id);
+
+        for (int i = 0; i < this.clients.length; i++) {
+            if (i != id) {
+                final TTransport transport = new TSocket("localhost", SDDBServer.BASE_PORT + i);
+                final TProtocol protocol = new TBinaryProtocol(transport);
+                this.clients[i] = new Operations.Client(protocol);
+            }
+
+            else
+                this.clients[i] = null;
+        }
+    }
 
     //Parte nova
     @Override
