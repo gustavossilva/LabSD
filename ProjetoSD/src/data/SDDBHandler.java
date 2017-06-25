@@ -4,11 +4,7 @@ import models.*;
 
 import org.apache.thrift.TException;
 
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -306,12 +302,11 @@ public class SDDBHandler implements Operations.Iface {
 
 }
 
-class RWSyncHashSet<E> implements Set<E> {
+ class  RWSyncHashSet<E> implements Set<E>,Serializable {
     private final HashSet<E> s = new HashSet<>();
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final Lock read = lock.readLock();
     private final Lock write = lock.writeLock();
-
     @Override
     public int size() {
         read.lock();
