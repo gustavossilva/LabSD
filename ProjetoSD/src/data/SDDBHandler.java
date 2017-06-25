@@ -99,18 +99,15 @@ public class SDDBHandler implements Operations.Iface {
         }catch(Exception e){
             e.printStackTrace();
         }
-        int teste = abs(theDigest[theDigest.length-1]%3);
+        int teste = abs(theDigest[theDigest.length-1]%clients.length);
         System.out.println(Integer.toString(teste));
         Vertice v = new Vertice(nome,cor,descricao,peso);
         if(setV != null) {
-            if(setV.contains(v)){
-                return false;
-            }
-/*            for (Vertice v : setV){
-                if(v.nome == nome){ //Nome já existente
+            for (Vertice ve : setV){
+                if(ve.nome == nome){ //Nome já existente
                     return false;
                 }
-            }*/
+            }
         }
         setV.add(v);
         return true;
