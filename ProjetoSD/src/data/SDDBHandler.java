@@ -28,15 +28,18 @@ public class SDDBHandler implements Operations.Iface {
     //Parte nova
     @Override
     public void carregaGrafo(String caminho){
-       Object aux = null;
-
+        Object aux = null;
+        Object aux2 = null;
         try{
-            FileInputStream restFile = new FileInputStream(caminho);
+            FileInputStream restFile = new FileInputStream(caminho+"A.txt");
             ObjectInputStream stream = new ObjectInputStream(restFile);
-
+            FileInputStream restFile2 = new FileInputStream(caminho+"V.txt");
+            ObjectInputStream stream2 = new ObjectInputStream(restFile2);
             aux = stream.readObject();
-            if(aux != null){
-                G = (Grafo)aux;
+            aux2 = stream2.readObject();
+            if(aux != null || aux2 != null){
+                setE = (RWSyncHashSet<Aresta>) aux;
+                setV = (RWSyncHashSet<Vertice>) aux2;
             }
             stream.close();
         }catch (Exception e){
@@ -48,16 +51,18 @@ public class SDDBHandler implements Operations.Iface {
     //Neste caso a função é usada de inicio (tanto parar inicializar, quanto para salvar)
     @Override
     public synchronized void salvaGrafo(String caminho){
-            try{
-                FileOutputStream saveFile = new FileOutputStream(caminho);
-                ObjectOutputStream stream = new ObjectOutputStream(saveFile);
-
-                stream.writeObject(G);
-                stream.close();
-            } catch (IOException exc){
-                exc.printStackTrace();
-            }
+        try{
+            FileOutputStream saveFile = new FileOutputStream(caminho+"A.txt");
+            ObjectOutputStream stream = new ObjectOutputStream(saveFile);
+            FileOutputStream saveFile2 = new FileOutputStream(caminho+"V.txt");
+            ObjectOutputStream stream2 = new ObjectOutputStream(saveFile2);
+            stream.writeObject(setE);
+            stream.writeObject(setV);
+            stream.close();
+        } catch (IOException exc){
+            exc.printStackTrace();
         }
+    }
 
     //Fim parte nova
     @Override
