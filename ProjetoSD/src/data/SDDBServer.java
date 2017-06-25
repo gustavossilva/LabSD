@@ -27,8 +27,8 @@ public class SDDBServer {
                 public void run() {
 //                    System.out.println(Thread.currentThread().getName() + ": server " + id);
 
-                    try {
-                        Operations.Processor processor = new Operations.Processor(new SDDBHandler(id, N_SERVERS));
+                    try (SDDBHandler handler = new SDDBHandler(id, N_SERVERS)) {
+                        Operations.Processor processor = new Operations.Processor(handler);
                         TServerTransport transport = new TServerSocket(BASE_PORT + id);
                         new TThreadPoolServer(new TThreadPoolServer.Args(transport).processor(processor)).serve();
                     }
@@ -36,7 +36,6 @@ public class SDDBServer {
                     catch (TTransportException e) {
                         e.printStackTrace();
                     }
-
                 }
             }).start();
         }
