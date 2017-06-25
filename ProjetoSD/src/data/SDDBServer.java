@@ -1,43 +1,37 @@
 package data;
 
-import models.*;
-
-import org.apache.thrift.server.*;
-import org.apache.thrift.transport.TFramedTransport;
-import org.apache.thrift.transport.TNonblockingServerSocket;
+import models.Operations;
+import org.apache.thrift.server.TServer;
+import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
-import org.apache.thrift.server.TServer.Args;
+import org.apache.thrift.transport.TTransport;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by gustavovm on 5/21/17.
  */
 public class SDDBServer {
-    private static ArrayList<TServerTransport> serverTransports = new ArrayList<>();
-    private static ArrayList<TServer> servers = new ArrayList<>();
     private static int port = 9080;
-    private static int qtdServer = 3;
 
     public static void main(String [] args){
-        try{
-            SDDBHandler handler = new SDDBHandler();
+        final int N_SERVERS = (args.length > 1) ? Integer.parseInt(args[1]) : 3;
+        Operations.Processor processor;
+        TServerTransport transport;
 
-            Operations.Processor processor = new Operations.Processor(handler);
-            for(int i =0;i<qtdServer;i++){
-                serverTransports.add(new TServerSocket(port++));
-                servers.add(new TThreadPoolServer
-                        (new TThreadPoolServer.Args(serverTransports.get(i)).processor(processor)));
-            }
-            for(int i = 0;i<qtdServer;i++) {
-                final int fimi = i;
-                System.out.println("Servidor Inicializado...");
+        try{
+
+            for(int i =0;i<N_SERVERS;i++){
+                processor = new Operations.Processor(new SDDBHandler());
+                transport = new TServerSocket(port++);
+                final TServer server = new TThreadPoolServer(new TThreadPoolServer.Args(transport).processor(processor));
+
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        servers.get(fimi).serve();
+                        System.out.println(Thread.currentThread().getName() + ": " + server);
+                        server.serve();
                     }
                 }).start();
             }
