@@ -31,14 +31,6 @@ public class SDDBServer {
                 servers.add(new TThreadPoolServer
                         (new TThreadPoolServer.Args(serverTransports.get(i)).processor(processor)));
             }
-            //TServerTransport serverTransport = new TServerSocket(9080);
-            //TServer server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(processor));
-            //Criar concorrencia com apenas um thread
-            //TNonblockingServerSocket serverTransport = new TNonblockingServerSocket(9080);
-            //THsHaServer.Args argus = new THsHaServer.Args(serverTransport);
-            //argus.processor(processor);
-            //argus.transportFactory(new TFramedTransport.Factory());
-            //TServer server = new THsHaServer(argus);
             for(int i = 0;i<qtdServer;i++) {
                 final int fimi = i;
                 System.out.println("Servidor Inicializado...");
