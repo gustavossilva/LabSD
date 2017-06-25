@@ -68,9 +68,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         }catch(Exception e){
             e.printStackTrace();
         }
-        int teste = abs(theDigest[theDigest.length-1]%clients.length);
-//        System.out.println("[SHA-1] " + teste);
-        return teste;
+        return abs(theDigest[theDigest.length-1]%clients.length);
     }
 
     private boolean startTransport(int i) {
@@ -193,21 +191,36 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
     @Override
     public boolean delVertice(int nome){
-        //for(Aresta a:G.A) {
-        for(Aresta a:setE){
-            if(a.v1 == nome || a.v2 == nome){
-                setE.remove(a);
-                if(setE.isEmpty()){
-                    break;
+        int responsible = distribute(new int[]{nome});
+
+        System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
+
+        if (responsible == this.id) {
+            //for(Aresta a:G.A) {
+            for(Aresta a:setE){
+                if(a.v1 == nome || a.v2 == nome){
+                    setE.remove(a);
+                    if(setE.isEmpty()){
+                        break;
+                    }
+                }
+            }
+            for(Vertice v:setV){
+                if (v.nome == nome){
+                    setV.remove(v);
+                    return true;
                 }
             }
         }
-        for(Vertice v:setV){
-            if (v.nome == nome){
-                setV.remove(v);
-                return true;
+
+        else if ( startTransport(responsible) ) {
+            try {
+                return this.clients[responsible].delVertice(nome);
             }
+
+            catch (TException e) {}
         }
+
         return false;
     }
 
@@ -224,20 +237,32 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
     @Override
     public boolean updateVertice(int nomeUp, Vertice V){
-        if(V == null){
+        if ((V == null) || (nomeUp != V.nome))
             return false;
-        }
-        if(nomeUp != V.nome){ //Alteração no Nome do vertice
-            return false;
-        }
-        for(Vertice v:setV){
-            if(v.nome == nomeUp){
-                v.cor = V.cor;
-                v.descricao = V.descricao;
-                v.peso = V.peso;
-                return true;
+
+        int responsible = distribute(new int[]{nomeUp});
+
+        System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
+
+        if (responsible == this.id) {
+            for(Vertice v:setV){
+                if(v.nome == nomeUp){
+                    v.cor = V.cor;
+                    v.descricao = V.descricao;
+                    v.peso = V.peso;
+                    return true;
+                }
             }
         }
+
+        else if ( startTransport(responsible) ) {
+            try {
+                return this.clients[responsible].updateVertice(nomeUp, V);
+            }
+
+            catch (TException e) {}
+        }
+
         return false; //Não encontrado
     }
     //Checa se já existe a Aresta
