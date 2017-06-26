@@ -23,8 +23,8 @@ import static java.lang.Math.abs;
  * Created by gustavovm on 5/21/17.
  */
 public class SDDBHandler implements Operations.Iface, Closeable {
-    private RWSyncHashSet<Aresta> setE = new RWSyncHashSet<>();
-    private RWSyncHashSet<Vertice> setV = new RWSyncHashSet<>();
+    private RWSyncCollection<Aresta> setE = new RWSyncCollection<>();
+    private RWSyncCollection<Vertice> setV = new RWSyncCollection<>();
     private final Operations.Client[] clients;
     private final TTransport[] transports;
     private final int id;
@@ -99,8 +99,8 @@ public class SDDBHandler implements Operations.Iface, Closeable {
             aux = stream.readObject();
             aux2 = stream2.readObject();
             if(aux != null || aux2 != null){
-                setE = (RWSyncHashSet<Aresta>) aux;
-                setV = (RWSyncHashSet<Vertice>) aux2;
+                setE = (RWSyncCollection<Aresta>) aux;
+                setV = (RWSyncCollection<Vertice>) aux2;
             }
             stream.close();
         }catch (Exception e){
@@ -434,100 +434,100 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
 }
 
- class  RWSyncHashSet<E> implements Set<E>,Serializable {
-    private final HashSet<E> s = new HashSet<>();
+class RWSyncCollection<E> implements Collection<E>,Serializable {
+    private final ArrayList<E> internal = new ArrayList<>();
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final Lock read = lock.readLock();
     private final Lock write = lock.writeLock();
 
     @Override
     public int size() {
-        read.lock();
-        try { return s.size(); }
-        finally { read.unlock(); }
+        this.read.lock();
+        try { return this.internal.size(); }
+        finally { this.read.unlock(); }
     }
 
     @Override
     public boolean isEmpty() {
-        read.lock();
-        try { return s.isEmpty(); }
-        finally { read.unlock(); }
+        this.read.lock();
+        try { return this.internal.isEmpty(); }
+        finally { this.read.unlock(); }
     }
 
     @Override
     public boolean contains(Object o) {
-        read.lock();
-        try { return s.contains(o); }
-        finally { read.unlock(); }
+        this.read.lock();
+        try { return this.internal.contains(o); }
+        finally { this.read.unlock(); }
     }
 
     @Override
     public Iterator<E> iterator() {
-        read.lock();
-        try { return s.iterator(); }
-        finally { read.unlock(); }
+        this.read.lock();
+        try { return this.internal.iterator(); }
+        finally { this.read.unlock(); }
     }
 
     @Override
     public Object[] toArray() {
-        read.lock();
-        try { return s.toArray(); }
-        finally { read.unlock(); }
+        this.read.lock();
+        try { return this.internal.toArray(); }
+        finally { this.read.unlock(); }
     }
 
     @Override
     public <T> T[] toArray(T[] ts) {
-        read.lock();
-        try { return s.toArray(ts); }
-        finally { read.unlock(); }
+        this.read.lock();
+        try { return this.internal.toArray(ts); }
+        finally { this.read.unlock(); }
     }
 
     @Override
     public boolean add(E e) {
-        write.lock();
-        try { return s.add(e); }
-        finally { write.unlock(); }
+        this.write.lock();
+        try { return this.internal.add(e); }
+        finally { this.write.unlock(); }
     }
 
     @Override
     public boolean remove(Object o) {
-        write.lock();
-        try { return s.remove(o); }
-        finally { write.unlock(); }
+        this.write.lock();
+        try { return this.internal.remove(o); }
+        finally { this.write.unlock(); }
     }
 
     @Override
     public boolean containsAll(Collection<?> collection) {
-        read.lock();
-        try { return s.containsAll(collection); }
-        finally { read.unlock(); }
+        this.read.lock();
+        try { return this.internal.containsAll(collection); }
+        finally { this.read.unlock(); }
     }
 
     @Override
     public boolean addAll(Collection<? extends E> collection) {
-        write.lock();
-        try { return s.addAll(collection); }
-        finally { write.unlock(); }
+        this.write.lock();
+        try { return this.internal.addAll(collection); }
+        finally { this.write.unlock(); }
     }
 
     @Override
     public boolean retainAll(Collection<?> collection) {
-        write.lock();
-        try { return s.retainAll(collection); }
-        finally { write.unlock(); }
+        this.write.lock();
+        try { return this.internal.retainAll(collection); }
+        finally { this.write.unlock(); }
     }
 
     @Override
     public boolean removeAll(Collection<?> collection) {
-        write.lock();
-        try { return s.removeAll(collection); }
-        finally { write.unlock(); }
+        this.write.lock();
+        try { return this.internal.removeAll(collection); }
+        finally { this.write.unlock(); }
     }
 
     @Override
     public void clear() {
-        write.lock();
-        try { s.clear(); }
-        finally { write.unlock(); }
+        this.write.lock();
+        try { this.internal.clear(); }
+        finally { this.write.unlock(); }
     }
 }
