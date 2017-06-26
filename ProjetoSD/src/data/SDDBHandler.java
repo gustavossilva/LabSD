@@ -372,7 +372,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
                     }
                 }
             }
-                return null;
+            return null;
         }
         else if ( startTransport(responsible) ) {
             try {
@@ -398,38 +398,40 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     }
 
     @Override
-    public String exibirVertice(){
+    public String exibirVertice(boolean flag){
         String exibir = "";
         for (Vertice v:setV){
             exibir = exibir+"Vertice: "+v.nome+" Peso: "+v.peso+" Cor: "+v.cor+" Descrição: "+v.descricao+"\n";
         }
 
-        for (Operations.Client client : this.clients)
-            if (client != null) {
-                try {
-                    exibir += client.exibirVertice();
+        if(flag) {
+            for (Operations.Client client : this.clients)
+                if (client != null) {
+                    try {
+                        exibir += client.exibirVertice(false);
+                    } catch (TException e) {
+                    }
                 }
-
-                catch (TException e) {}
-            }
-
+        }
         return exibir;
     }
 
     @Override
-    public String exibirAresta(){
+    public String exibirAresta(boolean flag){
         String exibir = "";
-        for (Aresta a:setE){
-            exibir = exibir+"Aresta: "+"("+a.v1+", "+a.v2+") Peso: "+a.peso+" Flag: "+a.flag+" Descrição: "+a.descricao+"\n";
-        }
-        for (Operations.Client client : this.clients)
-            if(client != null){
-                try{
-                    exibir += client.exibirVertice();
+        for (Aresta a : setE) {
+            exibir = exibir + "Aresta: " + "(" + a.v1 + ", " + a.v2 + ") Peso: " + a.peso + " Flag: " + a.isFlag() + " Descrição: " + a.descricao + "\n";
 
+        }
+        if(flag) {
+            for (Operations.Client client : this.clients)
+                if (client != null) {
+                    try {
+                        exibir += client.exibirAresta(false);
+                    } catch (TException e) {
+                    }
                 }
-                catch (TException e) {}
-            }
+        }
         return exibir;
     }
 
