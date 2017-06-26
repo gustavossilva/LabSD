@@ -50,16 +50,12 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         }
     }
 
-    private int distribute(int[] is) {
+    private int findResponsible(int i) {
         byte[] theDigest = null;
 
         try{
             MessageDigest md = MessageDigest.getInstance("SHA-1");
-
-            for (int i : is)
-                md.update( Integer.toString(i).getBytes("UTF-8") );
-
-            theDigest = md.digest();
+            theDigest = md.digest( Integer.toString(i).getBytes("UTF-8") );
         }
 
         catch(Exception e){
@@ -130,7 +126,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     //Fim parte nova
     @Override
     public boolean criarVertice(int nome, int cor, String descricao, double peso){
-        int responsible = distribute(new int[]{nome});
+        int responsible = findResponsible(nome);
         Vertice v = new Vertice(nome,cor,descricao,peso);
 
         System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
@@ -161,14 +157,14 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
     @Override
     public boolean criarAresta(int v1, int v2, double peso, boolean flag, String descricao){
-        int responsible1 = distribute(new int[]{v1}); //pego onde v1 está
+        int responsible1 = findResponsible(v1); //pego onde v1 está
         Aresta aux = new Aresta(v1, v2, peso, flag, descricao);
         if (responsible1 == this.id) { //checa se o vertice fonte está nesse servidor, caso o contrário passa para outro
             // o vértice fonte está nesse servidor, então insere
             if (!checaIgualdade(aux)) {
                 setE.add(aux);
                 if (flag) {
-                    int responsible2 = distribute(new int[]{v2}); //pego onde v2 está
+                    int responsible2 = findResponsible(v2); //pego onde v2 está
                     if(responsible2 == this.id){
                         Aresta aux2 = new Aresta(v2, v1, peso, flag, descricao);
                         if(!checaIgualdade(aux2)){
@@ -199,7 +195,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
     @Override
     public boolean delVertice(int nome){
-        int responsible = distribute(new int[]{nome});
+        int responsible = findResponsible(nome);
         System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
         if (responsible == this.id) {
             //for(Aresta a:G.A) {
@@ -230,7 +226,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     }
     @Override
     public boolean delAresta(int v1, int v2){
-        int responsible1 = distribute(new int[]{v1});
+        int responsible1 = findResponsible(v1);
 
         if (responsible1 == this.id) {
             if(this.setE.isEmpty())
@@ -241,7 +237,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
                     setE.remove(a);
                     //se é uma resta bidimensional, remove também.
                     if(a.isFlag()){
-                        int responsible2 = distribute(new int[]{v2});
+                        int responsible2 = findResponsible(v2);
                         if(responsible2 == this.id) {
                             Aresta aux = new Aresta(v2,v1,a.getPeso(),a.isFlag(),a.getDescricao());
                             setE.remove(aux);
@@ -274,7 +270,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         if ((V == null) || (nomeUp != V.nome))
             return false;
 
-        int responsible = distribute(new int[]{nomeUp});
+        int responsible = findResponsible(nomeUp);
 
         System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
 
@@ -336,7 +332,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
     @Override
     public Vertice getVertice(int nome){
-        int responsible = distribute(new int[]{nome});
+        int responsible = findResponsible(nome);
 
         System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
 
@@ -363,7 +359,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
     @Override
     public Aresta getAresta(int v1, int v2){
-        int responsible = distribute(new int[]{v1});
+        int responsible = findResponsible(v1);
         if(responsible == this.id){
             if(!setE.isEmpty()) {
                 for (Aresta a : setE) {
@@ -472,7 +468,45 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
     @Override
     public String menorCaminho(int nomeV1, int nomeV2){
-        return "oi";
+        if (getVertice(nomeV1) == null)
+            return String.format("Vertice %d não existe!", nomeV1);
+
+        if (getVertice(nomeV2) == null)
+            return String.format("Vertice %d não existe!", nomeV2);
+
+        final HashMap<Integer, Double> distances = new HashMap<>();
+        final HashMap<Integer, Integer> parents = new HashMap<>();
+        final PriorityQueue<Integer> next = new PriorityQueue<>();
+        double distance;
+        int current;
+
+        next.add(nomeV1);
+        distances.put(nomeV1, 0.0);
+
+        while ( !next.isEmpty() ) {
+            current = next.poll();
+
+            for (Vertice neighbor : listarVizinhosVertice(current)) {
+                distance = distances.getOrDefault(current, Double.POSITIVE_INFINITY);
+                distance += getAresta(current, neighbor.getNome()).getPeso();
+
+                if (distance < distances.getOrDefault(neighbor.getNome(), Double.POSITIVE_INFINITY)) {
+                    next.add( neighbor.getNome() );
+                    distances.put(neighbor.getNome(), distance);
+                    parents.put(neighbor.getNome(), current);
+                }
+            }
+        }
+
+        if ( !parents.containsKey(nomeV2) )
+            return String.format("Não existe caminho entre %d e %d", nomeV1, nomeV2);
+
+        String caminho = Integer.toString(nomeV2);
+
+        for (current = parents.get(nomeV2); current != nomeV1; current = parents.get(current))
+            caminho = String.format("%d, %s", current, caminho);
+
+        return caminho;
     }
 
     @Override
