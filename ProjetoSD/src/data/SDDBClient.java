@@ -208,11 +208,6 @@ public class SDDBClient {
                     default:
                         System.out.println("Opção inválida!");
                 }
-                try{
-                    Thread.sleep(5000);
-                }catch (InterruptedException e){
-                    e.printStackTrace();
-                }
             }
             transport.close();
         }catch (TException x){

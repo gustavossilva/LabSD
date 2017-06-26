@@ -233,7 +233,6 @@ public class SDDBHandler implements Operations.Iface, Closeable {
                 return false; //se está vazio retorna falso
             for(Aresta a:setE){
                 if(a.v1 == v1 && a.v2 == v2){
-
                     setE.remove(a);
                     //se é uma resta bidimensional, remove também.
                     if(a.isFlag()){
@@ -244,7 +243,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
                             return true;
                         }else if (startTransport(responsible2)){
                             try{
-                                this.clients[responsible2].delAresta(a.v2,a.v1);
+                                 return this.clients[responsible2].delAresta(a.v2,a.v1);
                             }catch(TException e){
                                 System.out.println("Erro na comunicação com o servidor" + responsible2);
                             }
@@ -306,26 +305,34 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     }
 
     @Override
-    public boolean updateAresta(int nomeV1, int nomeV2, Aresta A){
+    public boolean updateAresta(int nomeV1, int nomeV2, Aresta A) throws TException {
         if(A == null){
             return false;
         }
         if(nomeV1 != A.v1 || nomeV2 != A.v2){
             return false;
         }
-        for(Aresta a:setE){
-            if(a.v1 == nomeV1 && a.v2 == nomeV2){
-                a.peso = A.peso;
-                a.flag = A.flag;
-                a.descricao = A.descricao;
-                if(A.flag && !a.flag ){ //Se não era Bidirecional e agora é
-                    Aresta aux = new Aresta(A.v2,A.v1,A.peso,A.flag,A.descricao);
-                    if(!checaIgualdade(aux)){
-                        setE.add(aux);
+        int responsible = findResponsible(nomeV1);
+        if(responsible == this.id ) { //Aresta está nesse servidor
+            for (Aresta a : setE) {
+                if (a.v1 == nomeV1 && a.v2 == nomeV2) {
+                    a.peso = A.peso;
+                    a.flag = A.flag;
+                    a.descricao = A.descricao;
+                    if (A.flag && !a.flag) { //Se não era Bidirecional e agora é
+                        Aresta aux = new Aresta(A.v2, A.v1, A.peso, A.flag, A.descricao);
+                        this.criarAresta(A.v2,A.v1,A.peso,A.flag,A.descricao);
                     }
+
+                    return true;
                 }
-                return true;
             }
+        }
+        else if(startTransport(responsible)){
+            try {
+                return clients[responsible].updateAresta(nomeV1, nomeV2, A);
+            }
+            catch(TException e){}
         }
         return false; //Não encontrado
     }
