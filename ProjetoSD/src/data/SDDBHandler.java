@@ -103,6 +103,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
                 setV = (RWSyncCollection<Vertice>) aux2;
             }
             stream.close();
+            stream2.close();
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -118,7 +119,8 @@ public class SDDBHandler implements Operations.Iface, Closeable {
             FileOutputStream saveFile2 = new FileOutputStream(caminho+"V.txt");
             ObjectOutputStream stream2 = new ObjectOutputStream(saveFile2);
             stream.writeObject(setE);
-            stream.writeObject(setV);
+            stream2.writeObject(setV);
+            stream2.close();
             stream.close();
         } catch (IOException exc){
             exc.printStackTrace();
@@ -224,7 +226,6 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
             catch (TException e) {}
         }
-
         return false;
     }
     @Override
@@ -362,12 +363,22 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
     @Override
     public Aresta getAresta(int v1, int v2){
-        if(!setE.isEmpty()) {
-            for (Aresta a : setE) {
-                if (a.v1 == v1 && a.v2 == v2) {
-                    return a;
+        int responsible = distribute(new int[]{v1});
+        if(responsible == this.id){
+            if(!setE.isEmpty()) {
+                for (Aresta a : setE) {
+                    if (a.v1 == v1 && a.v2 == v2) {
+                        return a;
+                    }
                 }
             }
+                return null;
+        }
+        else if ( startTransport(responsible) ) {
+            try {
+                return this.clients[responsible].getAresta(v1,v2);
+            }
+            catch (TException e) {}
         }
         return null;
     }
@@ -411,6 +422,14 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         for (Aresta a:setE){
             exibir = exibir+"Aresta: "+"("+a.v1+", "+a.v2+") Peso: "+a.peso+" Flag: "+a.flag+" Descrição: "+a.descricao+"\n";
         }
+        for (Operations.Client client : this.clients)
+            if(client != null){
+                try{
+                    exibir += client.exibirVertice();
+
+                }
+                catch (TException e) {}
+            }
         return exibir;
     }
 
