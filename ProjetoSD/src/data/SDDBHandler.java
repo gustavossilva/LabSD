@@ -434,41 +434,38 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     }
 
     @Override//Corrigir
-    public String listarVerticesArestas(int v1, int v2) {
-        return("("+v1+", "+v2+")");
+    public List<Vertice> listarVerticesArestas(int v1, int v2) {
+        ArrayList<Vertice> vertices = new ArrayList<>();
+        vertices.add(getVertice(v1));
+        vertices.add(getVertice(v2));
+        return vertices;
     }
 
     @Override
-    public String listarArestasVertice(int nomeV) {
-        String exibir = "Arestas do vértice "+nomeV+": ";
+    public List<Aresta> listarArestasVertice(int nomeV) {
+        ArrayList<Aresta> arestas = new ArrayList<>();
         for(Aresta a:setE){
             if(a.v1 == nomeV || a.v2 == nomeV){
-                exibir = exibir+"("+a.v1+", "+a.v2+")";
+                arestas.add(a);
             }
         }
-        return exibir;
+        return arestas;
     }
 
     @Override
-    public String listarVizinhosVertice(int nomeV) {
-        String exibir = "Vizinhos de "+nomeV+" são: \n";
+    public List<Vertice> listarVizinhosVertice(int nomeV) {
+        ArrayList<Vertice> vizinhos = new ArrayList<>();
 
         for (Aresta a : setE) {
             if(a.v1 == nomeV) {
                 Vertice v = getVertice(a.v2);
-                exibir = exibir+ "Vértice: "+ v.nome +" "+
-                        "Cor: "+v.cor +" "+
-                        "Peso: "+ v.peso + " "+
-                        "Descrição: "+ v.descricao+ "\n";
+                vizinhos.add(v);
             } else if(a.v2 == nomeV) {
                 Vertice v = getVertice(a.v1);
-                exibir = exibir+ "Vértice: "+ v.nome +" "+
-                        "Cor: "+v.cor +" "+
-                        "Peso: "+ v.peso + " "+
-                        "Descrição: "+ v.descricao+ "\n";
+                vizinhos.add(v);
             }
         }
-        return exibir;
+        return vizinhos;
     }
 
     @Override
