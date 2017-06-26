@@ -15,7 +15,6 @@ import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.logging.Handler;
 
 import static java.lang.Math.abs;
 
@@ -24,10 +23,8 @@ import static java.lang.Math.abs;
  * Created by gustavovm on 5/21/17.
  */
 public class SDDBHandler implements Operations.Iface, Closeable {
-    //private ArrayList<Grafo> grafos = new ArrayList<Grafo>();
-    //private Grafo G = new Grafo(new ArrayList<Vertice>(),new ArrayList<Aresta>());
-    private RWSyncHashSet<Aresta> setE = new RWSyncHashSet<>();
-    private RWSyncHashSet<Vertice> setV = new RWSyncHashSet<>();
+    private RWSyncCollection<Aresta> setE = new RWSyncCollection<>();
+    private RWSyncCollection<Vertice> setV = new RWSyncCollection<>();
     private final Operations.Client[] clients;
     private final TTransport[] transports;
     private final int id;
@@ -54,21 +51,22 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     }
 
     private int distribute(int[] is) {
-        MessageDigest md;
-        byte[] bytesOfMessage = null,theDigest = null;
-        try{
-            md = MessageDigest.getInstance("SHA-1");
+        byte[] theDigest = null;
 
-            for (int i : is) {
-                bytesOfMessage = Integer.toString(i).getBytes("UTF-8");
-                md.update(bytesOfMessage);
-            }
+        try{
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+
+            for (int i : is)
+                md.update( Integer.toString(i).getBytes("UTF-8") );
 
             theDigest = md.digest();
-        }catch(Exception e){
+        }
+
+        catch(Exception e){
             e.printStackTrace();
         }
-        return abs(theDigest[theDigest.length-1]%clients.length);
+
+        return abs(theDigest[theDigest.length-1] % this.clients.length);
     }
 
     private boolean startTransport(int i) {
@@ -101,8 +99,8 @@ public class SDDBHandler implements Operations.Iface, Closeable {
             aux = stream.readObject();
             aux2 = stream2.readObject();
             if(aux != null || aux2 != null){
-                setE = (RWSyncHashSet<Aresta>) aux;
-                setV = (RWSyncHashSet<Vertice>) aux2;
+                setE = (RWSyncCollection<Aresta>) aux;
+                setV = (RWSyncCollection<Vertice>) aux2;
             }
             stream.close();
         }catch (Exception e){
@@ -160,18 +158,18 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     }
 
     @Override
-    public boolean criarAresta(int v1, int v2, double peso, int flag, String descricao){
+    public boolean criarAresta(int v1, int v2, double peso, boolean flag, String descricao){
         int responsible1 = distribute(new int[]{v1}); //pego onde v1 está
         Aresta aux = new Aresta(v1, v2, peso, flag, descricao);
         if (responsible1 == this.id) { //checa se o vertice fonte está nesse servidor, caso o contrário passa para outro
             // o vértice fonte está nesse servidor, então insere
             if (!checaIgualdade(aux)) {
-                if (flag == 2) {
+                setE.add(aux);
+                if (flag) {
                     int responsible2 = distribute(new int[]{v2}); //pego onde v2 está
                     if(responsible2 == this.id){
                         Aresta aux2 = new Aresta(v2, v1, peso, flag, descricao);
                         if(!checaIgualdade(aux2)){
-                            setE.add(aux);
                             setE.add(aux2);
                             return true;
                         }
@@ -184,7 +182,6 @@ public class SDDBHandler implements Operations.Iface, Closeable {
                         }
                     }
                 }
-                setE.add(aux);
                 return true;
             }
         }
@@ -198,18 +195,10 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         return false;
     }
 
-/*    @Override
-    public Grafo criarGrafo(java.util.List<Vertice> V, java.util.List<Aresta> A){
-        Grafo g = new Grafo(V,A);
-        return g;
-    }*/
-
     @Override
     public boolean delVertice(int nome){
         int responsible = distribute(new int[]{nome});
-
         System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
-
         if (responsible == this.id) {
             //for(Aresta a:G.A) {
             for(Aresta a:setE){
@@ -238,7 +227,6 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
         return false;
     }
-
     @Override
     public boolean delAresta(int v1, int v2){
         int responsible1 = distribute(new int[]{v1});
@@ -248,12 +236,13 @@ public class SDDBHandler implements Operations.Iface, Closeable {
                 return false; //se está vazio retorna falso
             for(Aresta a:setE){
                 if(a.v1 == v1 && a.v2 == v2){
+
                     setE.remove(a);
                     //se é uma resta bidimensional, remove também.
-                    if(a.getFlag() == 2){
+                    if(a.isFlag()){
                         int responsible2 = distribute(new int[]{v2});
                         if(responsible2 == this.id) {
-                            Aresta aux = new Aresta(v2,v1,a.getPeso(),a.getFlag(),a.getDescricao());
+                            Aresta aux = new Aresta(v2,v1,a.getPeso(),a.isFlag(),a.getDescricao());
                             setE.remove(aux);
                             return true;
                         }else if (startTransport(responsible2)){
@@ -332,7 +321,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
                 a.peso = A.peso;
                 a.flag = A.flag;
                 a.descricao = A.descricao;
-                if(A.flag == 2 && a.flag != 2){ //Se não era Bidirecional e agora é
+                if(A.flag && !a.flag ){ //Se não era Bidirecional e agora é
                     Aresta aux = new Aresta(A.v2,A.v1,A.peso,A.flag,A.descricao);
                     if(!checaIgualdade(aux)){
                         setE.add(aux);
@@ -342,12 +331,6 @@ public class SDDBHandler implements Operations.Iface, Closeable {
             }
         }
         return false; //Não encontrado
-    }
-
-    //Remover do thrift
-    @Override
-    public boolean updateGrafo(java.util.List<Vertice> V, java.util.List<Aresta> A){
-        return true;
     }
 
     @Override
@@ -492,100 +475,101 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
 }
 
-class  RWSyncHashSet<E> implements Set<E>,Serializable {
-    private final HashSet<E> s = new HashSet<>();
+
+class RWSyncCollection<E> implements Collection<E>,Serializable {
+    private final ArrayList<E> internal = new ArrayList<>();
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final Lock read = lock.readLock();
     private final Lock write = lock.writeLock();
 
     @Override
     public int size() {
-        read.lock();
-        try { return s.size(); }
-        finally { read.unlock(); }
+        this.read.lock();
+        try { return this.internal.size(); }
+        finally { this.read.unlock(); }
     }
 
     @Override
     public boolean isEmpty() {
-        read.lock();
-        try { return s.isEmpty(); }
-        finally { read.unlock(); }
+        this.read.lock();
+        try { return this.internal.isEmpty(); }
+        finally { this.read.unlock(); }
     }
 
     @Override
     public boolean contains(Object o) {
-        read.lock();
-        try { return s.contains(o); }
-        finally { read.unlock(); }
+        this.read.lock();
+        try { return this.internal.contains(o); }
+        finally { this.read.unlock(); }
     }
 
     @Override
     public Iterator<E> iterator() {
-        read.lock();
-        try { return s.iterator(); }
-        finally { read.unlock(); }
+        this.read.lock();
+        try { return this.internal.iterator(); }
+        finally { this.read.unlock(); }
     }
 
     @Override
     public Object[] toArray() {
-        read.lock();
-        try { return s.toArray(); }
-        finally { read.unlock(); }
+        this.read.lock();
+        try { return this.internal.toArray(); }
+        finally { this.read.unlock(); }
     }
 
     @Override
     public <T> T[] toArray(T[] ts) {
-        read.lock();
-        try { return s.toArray(ts); }
-        finally { read.unlock(); }
+        this.read.lock();
+        try { return this.internal.toArray(ts); }
+        finally { this.read.unlock(); }
     }
 
     @Override
     public boolean add(E e) {
-        write.lock();
-        try { return s.add(e); }
-        finally { write.unlock(); }
+        this.write.lock();
+        try { return this.internal.add(e); }
+        finally { this.write.unlock(); }
     }
 
     @Override
     public boolean remove(Object o) {
-        write.lock();
-        try { return s.remove(o); }
-        finally { write.unlock(); }
+        this.write.lock();
+        try { return this.internal.remove(o); }
+        finally { this.write.unlock(); }
     }
 
     @Override
     public boolean containsAll(Collection<?> collection) {
-        read.lock();
-        try { return s.containsAll(collection); }
-        finally { read.unlock(); }
+        this.read.lock();
+        try { return this.internal.containsAll(collection); }
+        finally { this.read.unlock(); }
     }
 
     @Override
     public boolean addAll(Collection<? extends E> collection) {
-        write.lock();
-        try { return s.addAll(collection); }
-        finally { write.unlock(); }
+        this.write.lock();
+        try { return this.internal.addAll(collection); }
+        finally { this.write.unlock(); }
     }
 
     @Override
     public boolean retainAll(Collection<?> collection) {
-        write.lock();
-        try { return s.retainAll(collection); }
-        finally { write.unlock(); }
+        this.write.lock();
+        try { return this.internal.retainAll(collection); }
+        finally { this.write.unlock(); }
     }
 
     @Override
     public boolean removeAll(Collection<?> collection) {
-        write.lock();
-        try { return s.removeAll(collection); }
-        finally { write.unlock(); }
+        this.write.lock();
+        try { return this.internal.removeAll(collection); }
+        finally { this.write.unlock(); }
     }
 
     @Override
     public void clear() {
-        write.lock();
-        try { s.clear(); }
-        finally { write.unlock(); }
+        this.write.lock();
+        try { this.internal.clear(); }
+        finally { this.write.unlock(); }
     }
 }

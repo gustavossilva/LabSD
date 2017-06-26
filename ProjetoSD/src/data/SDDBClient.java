@@ -30,6 +30,7 @@ public class SDDBClient {
             int v1,v2,cor,v3,v4;
             String descricao,arquivo;
             double peso;
+            boolean flag;
             Scanner leitura = new Scanner(System.in);
 
             //Operações
@@ -91,13 +92,13 @@ public class SDDBClient {
                         System.out.println("Entre com o vertice 2 da aresta: ");
                         v2 = leitura.nextInt();
                         System.out.println("Entre com a flag (Direcionado 1 Bi-Direcionado 2): ");
-                        cor = leitura.nextInt();
+                        flag = leitura.nextBoolean();    // cor = leitura.nextInt();
                         System.out.println("Descrição do vértice: ");
                         leitura.nextLine();
                         descricao = leitura.nextLine();
                         System.out.println("Digite o peso: ");
                         peso = leitura.nextDouble();
-                        if(client.criarAresta(v1,v2,peso,cor,descricao)){
+                        if(client.criarAresta(v1,v2,peso,flag,descricao)){
                             System.out.println("Aresta criada com sucesso!");
                             System.out.println(client.exibirAresta());
                         }else{
@@ -160,8 +161,8 @@ public class SDDBClient {
                         System.out.println("Digite o peso: ");
                         peso = leitura.nextDouble();
                         System.out.println("Digite o novo flag: ");
-                        cor = leitura.nextInt();
-                        if(client.updateAresta(v1,v2,new Aresta(v3,v4,peso,cor,descricao))){
+                        flag = leitura.nextBoolean();    // cor = leitura.nextInt();
+                        if(client.updateAresta(v1,v2,new Aresta(v3,v4,peso,flag,descricao))){
                             System.out.println("Atualizado com sucesso!");
                             System.out.println(client.exibirAresta());
                         }else{
