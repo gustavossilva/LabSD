@@ -81,7 +81,7 @@ public class SDDBClient {
                         peso = leitura.nextDouble();
                         if(client.criarVertice(v1,cor,descricao,peso)){
                             System.out.println("Vértice criado com sucesso!");
-                            System.out.println(client.exibirVertice());
+                            System.out.println(client.exibirVertice(true));
                         }else{
                             System.out.println("Erro ao criar vértice!");
                         }
@@ -100,7 +100,7 @@ public class SDDBClient {
                         peso = leitura.nextDouble();
                         if(client.criarAresta(v1,v2,peso,flag,descricao)){
                             System.out.println("Aresta criada com sucesso!");
-                            System.out.println(client.exibirAresta());
+                            System.out.println(client.exibirAresta(true));
                         }else{
                             System.out.println("Erro ao criar aresta!");
                         }
@@ -122,7 +122,7 @@ public class SDDBClient {
                         v2 = leitura.nextInt();
                         if(client.delAresta(v1,v2)){
                             System.out.println("Aresta removida com sucesso!");
-                            System.out.println(client.exibirAresta());
+                            System.out.println(client.exibirAresta(true));
                         }else{
                             System.out.println("Erro ao remover aresta!");
                         }
@@ -141,7 +141,7 @@ public class SDDBClient {
                         peso = leitura.nextDouble();
                         if(client.updateVertice(v1,new Vertice(v2,cor,descricao,peso))){
                             System.out.println("Atualizado com sucesso!");
-                            System.out.println(client.exibirVertice());
+                            System.out.println(client.exibirVertice(true));
                         }else{
                             System.out.println("Erro ao atualizar!");
                         }
@@ -164,7 +164,7 @@ public class SDDBClient {
                         flag = leitura.nextBoolean();    // cor = leitura.nextInt();
                         if(client.updateAresta(v1,v2,new Aresta(v3,v4,peso,flag,descricao))){
                             System.out.println("Atualizado com sucesso!");
-                            System.out.println(client.exibirAresta());
+                            System.out.println(client.exibirAresta(true));
                         }else{
                             System.out.println("Erro ao atualizar!");
                         }
@@ -173,10 +173,10 @@ public class SDDBClient {
                         System.out.println(client.exibirGrafo());
                         break;
                     case 10:
-                        System.out.println(client.exibirVertice());
+                        System.out.println(client.exibirVertice(true));
                         break;
                     case 11:
-                        System.out.println(client.exibirAresta());
+                        System.out.println(client.exibirAresta(true));
                         break;
                     case 12:
                         System.out.println("Qual aresta deseja visualizar os vértices? ");
