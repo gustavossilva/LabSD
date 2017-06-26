@@ -34,7 +34,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         this.transports = new TTransport[total];
         this.id = id;
 
-//        System.out.println(Thread.currentThread().getName() + ": handler " + id);
+        System.out.println(Thread.currentThread().getName() + ": handler " + id);
 
         for (int i = 0; i < this.clients.length; i++) {
             if (i != this.id) {
@@ -507,6 +507,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         final PriorityQueue<Integer> next = new PriorityQueue<>();
         double distance;
         int current;
+        Aresta aux;
 
         next.add(nomeV1);
         distances.put(nomeV1, 0.0);
@@ -514,14 +515,22 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         while ( !next.isEmpty() ) {
             current = next.poll();
 
-            for (Vertice neighbor : listarVizinhosVertice(current)) {
-                distance = distances.getOrDefault(current, Double.POSITIVE_INFINITY);
-                distance += getAresta(current, neighbor.getNome()).getPeso();
+            System.out.println("Current: " + current);
 
-                if (distance < distances.getOrDefault(neighbor.getNome(), Double.POSITIVE_INFINITY)) {
-                    next.add( neighbor.getNome() );
-                    distances.put(neighbor.getNome(), distance);
-                    parents.put(neighbor.getNome(), current);
+            for (Vertice neighbor : listarVizinhosVertice(current)) {
+                System.out.println("Neighbor: " + neighbor);
+
+                aux = getAresta(current, neighbor.getNome());
+
+                if (aux != null) {
+                    distance = distances.getOrDefault(current, Double.POSITIVE_INFINITY);
+                    distance += aux.getPeso();
+
+                    if (distance < distances.getOrDefault(neighbor.getNome(), Double.POSITIVE_INFINITY)) {
+                        next.add( neighbor.getNome() );
+                        distances.put(neighbor.getNome(), distance);
+                        parents.put(neighbor.getNome(), current);
+                    }
                 }
             }
         }
