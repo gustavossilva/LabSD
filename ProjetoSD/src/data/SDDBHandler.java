@@ -15,7 +15,6 @@ import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.logging.Handler;
 
 import static java.lang.Math.abs;
 
@@ -24,8 +23,6 @@ import static java.lang.Math.abs;
  * Created by gustavovm on 5/21/17.
  */
 public class SDDBHandler implements Operations.Iface, Closeable {
-    //private ArrayList<Grafo> grafos = new ArrayList<Grafo>();
-    //private Grafo G = new Grafo(new ArrayList<Vertice>(),new ArrayList<Aresta>());
     private RWSyncHashSet<Aresta> setE = new RWSyncHashSet<>();
     private RWSyncHashSet<Vertice> setV = new RWSyncHashSet<>();
     private final Operations.Client[] clients;
@@ -54,21 +51,22 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     }
 
     private int distribute(int[] is) {
-        MessageDigest md;
-        byte[] bytesOfMessage = null,theDigest = null;
-        try{
-            md = MessageDigest.getInstance("SHA-1");
+        byte[] theDigest = null;
 
-            for (int i : is) {
-                bytesOfMessage = Integer.toString(i).getBytes("UTF-8");
-                md.update(bytesOfMessage);
-            }
+        try{
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+
+            for (int i : is)
+                md.update( Integer.toString(i).getBytes("UTF-8") );
 
             theDigest = md.digest();
-        }catch(Exception e){
+        }
+
+        catch(Exception e){
             e.printStackTrace();
         }
-        return abs(theDigest[theDigest.length-1]%clients.length);
+
+        return abs(theDigest[theDigest.length-1] % this.clients.length);
     }
 
     private boolean startTransport(int i) {
@@ -160,7 +158,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     }
 
     @Override
-    public boolean criarAresta(int v1, int v2, double peso, int flag, String descricao){
+    public boolean criarAresta(int v1, int v2, double peso, boolean flag, String descricao){
         int criaControl = 0;
         for(Vertice v:setV){ //Checagem se ambos os vértices existem
             if(v.nome == v1 || v.nome == v2){
@@ -170,7 +168,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         if(criaControl > 1) {
             Aresta aux2 = new Aresta(v1, v2, peso, flag, descricao);
             if (!checaIgualdade(aux2)) {
-                if (flag == 2) {
+                if (flag) {
                     Aresta aux = new Aresta(v2, v1, peso, flag, descricao);
                     if (!checaIgualdade(aux)) {
                         setE.add(aux);
@@ -182,12 +180,6 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         }
         return false;
     }
-
-/*    @Override
-    public Grafo criarGrafo(java.util.List<Vertice> V, java.util.List<Aresta> A){
-        Grafo g = new Grafo(V,A);
-        return g;
-    }*/
 
     @Override
     public boolean delVertice(int nome){
@@ -288,7 +280,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
                 a.peso = A.peso;
                 a.flag = A.flag;
                 a.descricao = A.descricao;
-                if(A.flag == 2 && a.flag != 2){ //Se não era Bidirecional e agora é
+                if(A.flag && !a.flag ){ //Se não era Bidirecional e agora é
                     Aresta aux = new Aresta(A.v2,A.v1,A.peso,A.flag,A.descricao);
                     if(!checaIgualdade(aux)){
                         setE.add(aux);
@@ -298,12 +290,6 @@ public class SDDBHandler implements Operations.Iface, Closeable {
             }
         }
         return false; //Não encontrado
-    }
-
-    //Remover do thrift
-    @Override
-    public boolean updateGrafo(java.util.List<Vertice> V, java.util.List<Aresta> A){
-        return true;
     }
 
     @Override
