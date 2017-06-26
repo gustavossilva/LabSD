@@ -228,7 +228,6 @@ public class SDDBHandler implements Operations.Iface, Closeable {
                 }
             }
         }
-
         else if ( startTransport(responsible) ) {
             try {
                 return this.clients[responsible].delVertice(nome);
