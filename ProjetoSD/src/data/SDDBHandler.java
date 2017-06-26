@@ -161,23 +161,38 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
     @Override
     public boolean criarAresta(int v1, int v2, double peso, int flag, String descricao){
-        int criaControl = 0;
-        for(Vertice v:setV){ //Checagem se ambos os vértices existem
-            if(v.nome == v1 || v.nome == v2){
-                criaControl++;
-            }
-        }
-        if(criaControl > 1) {
-            Aresta aux2 = new Aresta(v1, v2, peso, flag, descricao);
-            if (!checaIgualdade(aux2)) {
+        int responsible1 = distribute(new int[]{v1}); //pego onde v1 está
+        Aresta aux = new Aresta(v1, v2, peso, flag, descricao);
+        if (responsible1 == this.id) { //checa se o vertice fonte está nesse servidor, caso o contrário passa para outro
+            // o vértice fonte está nesse servidor, então insere
+            if (!checaIgualdade(aux)) {
                 if (flag == 2) {
-                    Aresta aux = new Aresta(v2, v1, peso, flag, descricao);
-                    if (!checaIgualdade(aux)) {
-                        setE.add(aux);
+                    int responsible2 = distribute(new int[]{v2}); //pego onde v2 está
+                    if(responsible2 == this.id){
+                        Aresta aux2 = new Aresta(v2, v1, peso, flag, descricao);
+                        if(!checaIgualdade(aux2)){
+                            setE.add(aux);
+                            setE.add(aux2);
+                            return true;
+                        }
+                    }
+                    else if(startTransport(responsible2)) {//caso de bidirecionado, crio outra aresta no server necessário.
+                        try {
+                            this.clients[responsible2].criarAresta(v2, v1, peso, flag, descricao);
+                        } catch (TException e) {
+                            System.out.println(e);
+                        }
                     }
                 }
-                setE.add(aux2);
+                setE.add(aux);
                 return true;
+            }
+        }
+        else if (startTransport(responsible1)){
+            try {
+                return this.clients[responsible1].criarAresta(v1, v2, peso, flag, descricao);
+            } catch (TException e) {
+                return false;
             }
         }
         return false;
@@ -199,7 +214,8 @@ public class SDDBHandler implements Operations.Iface, Closeable {
             //for(Aresta a:G.A) {
             for(Aresta a:setE){
                 if(a.v1 == nome || a.v2 == nome){
-                    setE.remove(a);
+                    delAresta(a.v1,a.v2);
+                    delAresta(a.v2,a.v1);
                     if(setE.isEmpty()){
                         break;
                     }
@@ -226,10 +242,39 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
     @Override
     public boolean delAresta(int v1, int v2){
-        for(Aresta a:setE){
-            if(a.v1 == v1 && a.v2 == v2){
-                setE.remove(a);
-                return true;
+        int responsible1 = distribute(new int[]{v1});
+
+        if (responsible1 == this.id) {
+            if(this.setE.isEmpty())
+                return false; //se está vazio retorna falso
+            for(Aresta a:setE){
+                if(a.v1 == v1 && a.v2 == v2){
+                    setE.remove(a);
+                    //se é uma resta bidimensional, remove também.
+                    if(a.getFlag() == 2){
+                        int responsible2 = distribute(new int[]{v2});
+                        if(responsible2 == this.id) {
+                            Aresta aux = new Aresta(v2,v1,a.getPeso(),a.getFlag(),a.getDescricao());
+                            setE.remove(aux);
+                            return true;
+                        }else if (startTransport(responsible2)){
+                            try{
+                                this.clients[responsible2].delAresta(a.v2,a.v1);
+                            }catch(TException e){
+                                System.out.println("Erro na comunicação com o servidor" + responsible2);
+                            }
+                        }
+                    }else {
+                        return true;
+                    }
+                }
+            }
+
+        }else if(startTransport(responsible1)){
+            try{
+                return this.clients[responsible1].delAresta(v1,v2);
+            }catch(TException e){
+                System.out.println("Erro na comunicação com o servidor" + responsible1);
             }
         }
         return false;
@@ -448,7 +493,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
 }
 
- class  RWSyncHashSet<E> implements Set<E>,Serializable {
+class  RWSyncHashSet<E> implements Set<E>,Serializable {
     private final HashSet<E> s = new HashSet<>();
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final Lock read = lock.readLock();
