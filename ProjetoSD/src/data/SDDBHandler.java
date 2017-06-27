@@ -169,9 +169,12 @@ public class SDDBHandler implements Operations.Iface, Closeable {
                 if (!checaIgualdade(aux2)) {
                     setE.add(aux2);
                     return true;
+                }else{
+                    setE.remove(aux);
+                    return false;
                 }
             }
-                return true;
+            return true;
         }
         else if (startTransport(responsible1)){
             try {
@@ -311,24 +314,15 @@ public class SDDBHandler implements Operations.Iface, Closeable {
                     if (A.flag && !a.flag) { //Se não era Bidirecional e agora é
                         Aresta aux = new Aresta(A.v2, A.v1, A.peso, A.flag, A.descricao);
                         int responsible2 = findResponsible(A.v2);
-                        if(responsible2 == this.id){
-                            if (this.criarAresta(A.v2,A.v1,A.peso,A.flag,A.descricao))
-                                return true;
-                            else{
-                                //caso ja exista o vertice criado ele somente altera.
-                                Aresta a2 = this.getAresta(A.v2,A.v1);
-                                updateAresta(A.v2,A.v1,aux);
-                            }
-
-                        }else if(startTransport(responsible)){
-                            try
-                            {
-                                if (clients[responsible2].criarAresta(A.v2,A.v1,A.peso,A.flag,A.descricao))
-                                    return true;
-                                else {
-                                    return clients[responsible2].updateAresta(A.v2, A.v1, aux);
-                                }
-                            }catch (TException e) {}
+                        if(getAresta(A.v2,A.v1) == null){
+                            setE.add(aux);
+                        }
+                        if (this.criarAresta(A.v2,A.v1,A.peso,A.flag,A.descricao))
+                            return true;
+                        else{
+                            //caso ja exista o vertice criado ele somente altera.
+                            Aresta a2 = this.getAresta(A.v2,A.v1);
+                            updateAresta(A.v2,A.v1,aux);
                         }
                     }
                     else if(!A.flag && a.flag){ //se era biderecional e agora não é mais
