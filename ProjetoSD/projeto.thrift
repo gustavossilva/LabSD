@@ -29,8 +29,8 @@ service Operations {
     string exibirGrafo(),
     string exibirVertice(1:bool flag),
     string exibirAresta(1:bool flag),
-    string listarVerticesArestas(1:i32 v1,2:i32 v2),
-    string listarArestasVertice(1:i32 nomeV),
-    string listarVizinhosVertice(1:i32 nomeV),
+    list<Vertice> listarVerticesArestas(1:i32 v1,2:i32 v2),
+    list<Aresta> listarArestasVertice(1:i32 nomeV,2:bool flag),
+    list<Vertice> listarVizinhosVertice(1:i32 nomeV),
     string menorCaminho(1:i32 v1,2:i32 v2)
 }

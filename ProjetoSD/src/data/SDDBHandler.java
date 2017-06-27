@@ -34,7 +34,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         this.transports = new TTransport[total];
         this.id = id;
 
-//        System.out.println(Thread.currentThread().getName() + ": handler " + id);
+        System.out.println(Thread.currentThread().getName() + ": handler " + id);
 
         for (int i = 0; i < this.clients.length; i++) {
             if (i != this.id) {
@@ -158,6 +158,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     @Override
     public boolean criarAresta(int v1, int v2, double peso, boolean flag, String descricao){
         int responsible1 = findResponsible(v1); //pego onde v1 está
+        System.out.println("[SERVER-" + this.id + "] responsible = " + responsible1);
         Aresta aux = new Aresta(v1, v2, peso, flag, descricao);
         if (responsible1 == this.id) { //checa se o vertice fonte está nesse servidor, caso o contrário passa para outro
             // o vértice fonte está nesse servidor, então insere
@@ -401,13 +402,13 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     }
 
     @Override
-    public String exibirVertice(boolean flag){
+    public String exibirVertice(boolean first){
         String exibir = "";
         for (Vertice v:setV){
             exibir = exibir+"Vertice: "+v.nome+" Peso: "+v.peso+" Cor: "+v.cor+" Descrição: "+v.descricao+"\n";
         }
 
-        if(flag) {
+        if(first) {
             for (Operations.Client client : this.clients)
                 if (client != null) {
                     try {
@@ -420,13 +421,13 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     }
 
     @Override
-    public String exibirAresta(boolean flag){
+    public String exibirAresta(boolean first){
         String exibir = "";
         for (Aresta a : setE) {
             exibir = exibir + "Aresta: " + "(" + a.v1 + ", " + a.v2 + ") Peso: " + a.peso + " Flag: " + a.isFlag() + " Descrição: " + a.descricao + "\n";
 
         }
-        if(flag) {
+        if(first) {
             for (Operations.Client client : this.clients)
                 if (client != null) {
                     try {
@@ -441,33 +442,53 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     @Override//Corrigir
     public List<Vertice> listarVerticesArestas(int v1, int v2) {
         ArrayList<Vertice> vertices = new ArrayList<>();
-        vertices.add(getVertice(v1));
-        vertices.add(getVertice(v2));
+        if(getAresta(v1,v2) !=null){
+            vertices.add(getVertice(v1));
+            vertices.add(getVertice(v2));
+        }
         return vertices;
     }
 
     @Override
-    public List<Aresta> listarArestasVertice(int nomeV) {
+    public List<Aresta> listarArestasVertice(int nomeV, boolean first) {
         ArrayList<Aresta> arestas = new ArrayList<>();
-        for(Aresta a:setE){
-            if(a.v1 == nomeV || a.v2 == nomeV){
-                arestas.add(a);
+        if(!setE.isEmpty()) {
+            for (Aresta a : setE) {
+                if (a.v1 == nomeV || a.v2 == nomeV) {
+                    arestas.add(a);
+                }
+            }
+        }
+        if(first){
+            for(Operations.Client client : this.clients){
+                if(client !=null){
+                    try{
+                        arestas.addAll(client.listarArestasVertice(nomeV,false));
+                    }catch(Exception t){
+                        t.printStackTrace();
+                    }
+                }
             }
         }
         return arestas;
     }
 
+
     @Override
     public List<Vertice> listarVizinhosVertice(int nomeV) {
         ArrayList<Vertice> vizinhos = new ArrayList<>();
-
-        for (Aresta a : setE) {
-            if(a.v1 == nomeV) {
-                Vertice v = getVertice(a.v2);
-                vizinhos.add(v);
-            } else if(a.v2 == nomeV) {
-                Vertice v = getVertice(a.v1);
-                vizinhos.add(v);
+        Vertice aux;
+        for (Aresta a : listarArestasVertice(nomeV,true)) {
+            if (a.v1 == nomeV) {
+                aux = getVertice(a.v2);
+                if (!vizinhos.contains(aux)) {
+                    vizinhos.add(aux);
+                }
+            } else if (a.v2 == nomeV) {
+                aux = getVertice(a.v1);
+                if (!vizinhos.contains(aux)) {
+                    vizinhos.add(aux);
+                }
             }
         }
         return vizinhos;
@@ -486,6 +507,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         final PriorityQueue<Integer> next = new PriorityQueue<>();
         double distance;
         int current;
+        Aresta aux;
 
         next.add(nomeV1);
         distances.put(nomeV1, 0.0);
@@ -493,14 +515,22 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         while ( !next.isEmpty() ) {
             current = next.poll();
 
-            for (Vertice neighbor : listarVizinhosVertice(current)) {
-                distance = distances.getOrDefault(current, Double.POSITIVE_INFINITY);
-                distance += getAresta(current, neighbor.getNome()).getPeso();
+            System.out.println("Current: " + current);
 
-                if (distance < distances.getOrDefault(neighbor.getNome(), Double.POSITIVE_INFINITY)) {
-                    next.add( neighbor.getNome() );
-                    distances.put(neighbor.getNome(), distance);
-                    parents.put(neighbor.getNome(), current);
+            for (Vertice neighbor : listarVizinhosVertice(current)) {
+                System.out.println("Neighbor: " + neighbor);
+
+                aux = getAresta(current, neighbor.getNome());
+
+                if (aux != null) {
+                    distance = distances.getOrDefault(current, Double.POSITIVE_INFINITY);
+                    distance += aux.getPeso();
+
+                    if (distance < distances.getOrDefault(neighbor.getNome(), Double.POSITIVE_INFINITY)) {
+                        next.add( neighbor.getNome() );
+                        distances.put(neighbor.getNome(), distance);
+                        parents.put(neighbor.getNome(), current);
+                    }
                 }
             }
         }
