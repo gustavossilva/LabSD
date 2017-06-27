@@ -18,7 +18,7 @@ public class SDDBClient {
 
     public static void main(String [] args) {
         try{
-            TTransport transport = new TSocket("localhost",9080);
+            TTransport transport = new TSocket("localhost",9081);
             transport.open();
 
             TProtocol protocol = new TBinaryProtocol(transport);
@@ -189,7 +189,7 @@ public class SDDBClient {
                     case 13:
                         System.out.println("Digite qual vértice deseja visualizar as arestas: ");
                         v1 = leitura.nextInt();
-                        System.out.println(client.listarArestasVertice(v1));
+                        System.out.println(client.listarArestasVertice(v1,true));
                         break;
                     case 14:
                         System.out.println("Digite o numero do vertice que deseja verificar os vizinhos: ");
@@ -202,11 +202,13 @@ public class SDDBClient {
                         System.out.println("Digite o segundo vértice do caminho: ");
                         v2 = leitura.nextInt();
                         System.out.println(client.menorCaminho(v1,v2));
+                        break;
                     case 16:
                         System.out.println("Saindo do sistema e desconectando do servidor...");
                         break;
                     default:
                         System.out.println("Opção inválida!");
+                        break;
                 }
             }
             transport.close();

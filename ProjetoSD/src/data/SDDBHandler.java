@@ -158,6 +158,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     @Override
     public boolean criarAresta(int v1, int v2, double peso, boolean flag, String descricao){
         int responsible1 = findResponsible(v1); //pego onde v1 está
+        System.out.println("[SERVER-" + this.id + "] responsible = " + responsible1);
         Aresta aux = new Aresta(v1, v2, peso, flag, descricao);
         if (responsible1 == this.id) { //checa se o vertice fonte está nesse servidor, caso o contrário passa para outro
             // o vértice fonte está nesse servidor, então insere
@@ -441,33 +442,54 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     @Override//Corrigir
     public List<Vertice> listarVerticesArestas(int v1, int v2) {
         ArrayList<Vertice> vertices = new ArrayList<>();
-        vertices.add(getVertice(v1));
-        vertices.add(getVertice(v2));
-        return vertices;
+        if(getAresta(v1,v2) !=null){
+            vertices.add(getVertice(v1));
+            vertices.add(getVertice(v2));
+            return vertices;
+        }
+        return null;
     }
 
     @Override
-    public List<Aresta> listarArestasVertice(int nomeV) {
+    public List<Aresta> listarArestasVertice(int nomeV, boolean first) {
         ArrayList<Aresta> arestas = new ArrayList<>();
-        for(Aresta a:setE){
-            if(a.v1 == nomeV || a.v2 == nomeV){
-                arestas.add(a);
+        if(!setE.isEmpty()) {
+            for (Aresta a : setE) {
+                if (a.v1 == nomeV || a.v2 == nomeV) {
+                    arestas.add(a);
+                }
+            }
+        }
+        if(first){
+            for(Operations.Client client : this.clients){
+                if(client !=null){
+                    try{
+                        arestas.addAll(listarArestasVertice(nomeV,false));
+                    }catch(Exception t){
+                        t.printStackTrace();
+                    }
+                }
             }
         }
         return arestas;
     }
 
+
     @Override
     public List<Vertice> listarVizinhosVertice(int nomeV) {
         ArrayList<Vertice> vizinhos = new ArrayList<>();
-
-        for (Aresta a : setE) {
-            if(a.v1 == nomeV) {
-                Vertice v = getVertice(a.v2);
-                vizinhos.add(v);
-            } else if(a.v2 == nomeV) {
-                Vertice v = getVertice(a.v1);
-                vizinhos.add(v);
+        Vertice aux;
+        for (Aresta a : listarArestasVertice(nomeV,true)) {
+            if (a.v1 == nomeV) {
+                aux = listarVerticesArestas(a.v1, a.v2).get(1);
+                if (!vizinhos.contains(aux)) {
+                    vizinhos.add(aux);
+                }
+            } else if (a.v2 == nomeV) {
+                aux = listarVerticesArestas(a.v1, a.v2).get(0);
+                if (!vizinhos.contains(aux)) {
+                    vizinhos.add(aux);
+                }
             }
         }
         return vizinhos;
