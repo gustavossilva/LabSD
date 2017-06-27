@@ -16,21 +16,24 @@ public final class SDDBTests {
 
     public static void main(String[] args) {
         try (TTransport transport = new TSocket("localhost",9080)) {
-            TProtocol protocol = new TBinaryProtocol(transport);
-            Operations.Client client = new Operations.Client(protocol);
-
             transport.open();
 
-            client.criarVertice(1, 0, "A", 0);
-            client.criarVertice(2, 0, "B", 0);
-            client.criarVertice(3, 0, "C", 0);
-            client.criarVertice(4, 0, "D", 0);
-            client.criarVertice(5, 0, "E", 0);
+            Operations.Client client = new Operations.Client(new TBinaryProtocol(transport));
 
-            client.criarAresta(1, 2, 1, false, "A -> B");
-            client.criarAresta(2, 3, 1, true, "B <-> C");
-            client.criarAresta(3, 4, 1, true, "C <-> D");
-            client.criarAresta(4, 5, 1, false, "D -> E");
+            try {
+                assert client.criarVertice(1, 0, "A", 0);
+                assert client.criarVertice(2, 0, "B", 0);
+                assert client.criarVertice(3, 0, "C", 0);
+                assert client.criarVertice(4, 0, "D", 0);
+                assert client.criarVertice(5, 0, "E", 0);
+
+                assert client.criarAresta(1, 2, 1, false, "A -> B");
+                assert client.criarAresta(2, 3, 2, false, "B -> C");
+                assert client.criarAresta(3, 4, 4, false, "C -> D");
+                assert client.criarAresta(4, 5, 8, false, "D -> E");
+            }
+
+            catch (AssertionError e) {}
 
             System.out.println( client.exibirVertice(false) );
             System.out.println( client.exibirAresta(false) );
@@ -42,7 +45,7 @@ public final class SDDBTests {
         }
 
         catch (TException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
 
     }
