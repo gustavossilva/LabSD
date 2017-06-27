@@ -445,9 +445,8 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         if(getAresta(v1,v2) !=null){
             vertices.add(getVertice(v1));
             vertices.add(getVertice(v2));
-            return vertices;
         }
-        return null;
+        return vertices;
     }
 
     @Override
@@ -464,7 +463,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
             for(Operations.Client client : this.clients){
                 if(client !=null){
                     try{
-                        arestas.addAll(listarArestasVertice(nomeV,false));
+                        arestas.addAll(client.listarArestasVertice(nomeV,false));
                     }catch(Exception t){
                         t.printStackTrace();
                     }
@@ -481,12 +480,12 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         Vertice aux;
         for (Aresta a : listarArestasVertice(nomeV,true)) {
             if (a.v1 == nomeV) {
-                aux = listarVerticesArestas(a.v1, a.v2).get(1);
+                aux = getVertice(a.v2);
                 if (!vizinhos.contains(aux)) {
                     vizinhos.add(aux);
                 }
             } else if (a.v2 == nomeV) {
-                aux = listarVerticesArestas(a.v1, a.v2).get(0);
+                aux = getVertice(a.v1);
                 if (!vizinhos.contains(aux)) {
                     vizinhos.add(aux);
                 }
