@@ -158,7 +158,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     @Override
     public boolean criarAresta(int v1, int v2, double peso, boolean flag, String descricao){
         int responsible1 = findResponsible(v1); //pego onde v1 está
-        System.out.println("[SERVER-" + this.id + "] responsible = " + responsible1);
+        System.out.println("[ARESTA!SERVER-" + this.id + "] responsible = " + responsible1);
         Aresta aux = new Aresta(v1, v2, peso, flag, descricao);
         if (responsible1 == this.id) { //checa se o vertice fonte está nesse servidor, caso o contrário passa para outro
             // o vértice fonte está nesse servidor, então insere
@@ -166,20 +166,21 @@ public class SDDBHandler implements Operations.Iface, Closeable {
                 setE.add(aux);
                 if (flag) {
                     int responsible2 = findResponsible(v2); //pego onde v2 está
-                    if(responsible2 == this.id){
-                        Aresta aux2 = new Aresta(v2, v1, peso, flag, descricao);
-                        if(!checaIgualdade(aux2)){
-                            setE.add(aux2);
-                            return true;
-                        }
+//                    if(responsible2 == this.id){
+                    Aresta aux2 = new Aresta(v2, v1, peso, flag, descricao);
+                    if(!checaIgualdade(aux2)){
+                        setE.add(aux2);
+                        return true;
                     }
-                    else if(startTransport(responsible2)) {//caso de bidirecionado, crio outra aresta no server necessário.
-                        try {
-                            this.clients[responsible2].criarAresta(v2, v1, peso, flag, descricao);
-                        } catch (TException e) {
-                            System.out.println(e);
-                        }
-                    }
+//                    }
+//                    else if(startTransport(responsible2)) {//caso de bidirecionado, crio outra aresta no server necessário.
+//                        try {
+//                                return this.clients[responsible2].criarAresta(v2, v1, peso, flag, descricao);
+//
+//                        } catch (TException e) {
+//                            System.out.println(e);
+//                        }
+//                    }
                 }
                 return true;
             }
@@ -203,7 +204,6 @@ public class SDDBHandler implements Operations.Iface, Closeable {
             for(Aresta a:setE){
                 if(a.v1 == nome || a.v2 == nome){
                     delAresta(a.v1,a.v2);
-                    delAresta(a.v2,a.v1);
                     if(setE.isEmpty()){
                         break;
                     }
@@ -244,7 +244,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
                             return true;
                         }else if (startTransport(responsible2)){
                             try{
-                                 return this.clients[responsible2].delAresta(a.v2,a.v1);
+                                return this.clients[responsible2].delAresta(a.v2,a.v1);
                             }catch(TException e){
                                 System.out.println("Erro na comunicação com o servidor" + responsible2);
                             }
@@ -322,7 +322,44 @@ public class SDDBHandler implements Operations.Iface, Closeable {
                     a.descricao = A.descricao;
                     if (A.flag && !a.flag) { //Se não era Bidirecional e agora é
                         Aresta aux = new Aresta(A.v2, A.v1, A.peso, A.flag, A.descricao);
-                        this.criarAresta(A.v2,A.v1,A.peso,A.flag,A.descricao);
+                        int responsible2 = findResponsible(A.v2);
+                        if(responsible2 == this.id){
+                            if (this.criarAresta(A.v2,A.v1,A.peso,A.flag,A.descricao))
+                                return true;
+                            else{
+                                //caso ja exista o vertice criado ele somente altera.
+                                Aresta a2 = this.getAresta(A.v2,A.v1);
+                                updateAresta(A.v2,A.v1,aux);
+                            }
+
+                        }else if(startTransport(responsible)){
+                            try
+                            {
+                                if (clients[responsible2].criarAresta(A.v2,A.v1,A.peso,A.flag,A.descricao))
+                                    return true;
+                                else {
+                                    return clients[responsible2].updateAresta(A.v2, A.v1, aux);
+                                }
+                            }catch (TException e) {}
+                        }
+                    }
+                    else if(!A.flag && a.flag){ //se era biderecional e agora não é mais
+                        Aresta aux = new Aresta(A.v2, A.v1, A.peso, false, A.descricao); //atualizo a aresta do outro lado para que ela n remova a aresta principal entrada na funçao deleteAresta
+                        int responsible2 = findResponsible(a.v2);
+                        if(responsible2 == this.id){
+                            for (Aresta a2 : setE) {
+
+                                if (a2.v2 == nomeV1 && a2.v1 == nomeV2) {
+                                    a2.flag = false;
+                                    this.delAresta(a2.v2,a2.v1); // remove a resta usando delAresta
+                                }
+                            }
+                        }else if(startTransport(responsible)){
+                            try{
+                                if(clients[responsible2].updateAresta(A.v2,A.v1,aux))
+                                    return clients[responsible2].delAresta(A.v2,A.v1); //garante que foi atualizado em outro servidor e remove
+                            }catch(TException e ) {}
+                        }
                     }
 
                     return true;
@@ -425,7 +462,6 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         String exibir = "";
         for (Aresta a : setE) {
             exibir = exibir + "Aresta: " + "(" + a.v1 + ", " + a.v2 + ") Peso: " + a.peso + " Flag: " + a.isFlag() + " Descrição: " + a.descricao + "\n";
-
         }
         if(first) {
             for (Operations.Client client : this.clients)
