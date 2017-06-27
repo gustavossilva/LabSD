@@ -402,13 +402,13 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     }
 
     @Override
-    public String exibirVertice(boolean flag){
+    public String exibirVertice(boolean first){
         String exibir = "";
         for (Vertice v:setV){
             exibir = exibir+"Vertice: "+v.nome+" Peso: "+v.peso+" Cor: "+v.cor+" Descrição: "+v.descricao+"\n";
         }
 
-        if(flag) {
+        if(first) {
             for (Operations.Client client : this.clients)
                 if (client != null) {
                     try {
@@ -421,13 +421,13 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     }
 
     @Override
-    public String exibirAresta(boolean flag){
+    public String exibirAresta(boolean first){
         String exibir = "";
         for (Aresta a : setE) {
             exibir = exibir + "Aresta: " + "(" + a.v1 + ", " + a.v2 + ") Peso: " + a.peso + " Flag: " + a.isFlag() + " Descrição: " + a.descricao + "\n";
 
         }
-        if(flag) {
+        if(first) {
             for (Operations.Client client : this.clients)
                 if (client != null) {
                     try {
