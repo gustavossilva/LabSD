@@ -18,7 +18,7 @@ public class SDDBClient {
 
     public static void main(String [] args) {
         try{
-            TTransport transport = new TSocket("localhost",9081);
+            TTransport transport = new TSocket("localhost",9080);
             transport.open();
 
             TProtocol protocol = new TBinaryProtocol(transport);
