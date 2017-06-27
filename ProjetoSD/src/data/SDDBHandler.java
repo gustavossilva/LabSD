@@ -162,28 +162,16 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         Aresta aux = new Aresta(v1, v2, peso, flag, descricao);
         if (responsible1 == this.id) { //checa se o vertice fonte está nesse servidor, caso o contrário passa para outro
             // o vértice fonte está nesse servidor, então insere
-            if (!checaIgualdade(aux)) {
+            if (!checaIgualdade(aux))
                 setE.add(aux);
-                if (flag) {
-                    int responsible2 = findResponsible(v2); //pego onde v2 está
-//                    if(responsible2 == this.id){
-                    Aresta aux2 = new Aresta(v2, v1, peso, flag, descricao);
-                    if(!checaIgualdade(aux2)){
-                        setE.add(aux2);
-                        return true;
-                    }
-//                    }
-//                    else if(startTransport(responsible2)) {//caso de bidirecionado, crio outra aresta no server necessário.
-//                        try {
-//                                return this.clients[responsible2].criarAresta(v2, v1, peso, flag, descricao);
-//
-//                        } catch (TException e) {
-//                            System.out.println(e);
-//                        }
-//                    }
+            if (flag) {
+                Aresta aux2 = new Aresta(v2, v1, peso, flag, descricao);
+                if (!checaIgualdade(aux2)) {
+                    setE.add(aux2);
+                    return true;
                 }
-                return true;
             }
+                return true;
         }
         else if (startTransport(responsible1)){
             try {
