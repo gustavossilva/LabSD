@@ -314,65 +314,37 @@ public class SDDBHandler implements Operations.Iface, Closeable {
             return false;
         }
         int responsible = findResponsible(nomeV1);
-        if(responsible == this.id ) { //Aresta está nesse servidor
+        if(responsible == this.id) {
             for (Aresta a : setE) {
                 if (a.v1 == nomeV1 && a.v2 == nomeV2) {
+                    if(!A.flag && a.flag){
+                        Aresta aux = new Aresta(a.v2, a.v1, a.peso, a.flag, a.descricao);
+                        setE.remove(aux);
+                        a.flag = false;
+                    }
                     a.peso = A.peso;
-                    a.flag = A.flag;
                     a.descricao = A.descricao;
-                    if (A.flag && !a.flag) { //Se não era Bidirecional e agora é
+                    if (A.flag && !a.flag) {
+                        a.flag = true;
                         Aresta aux = new Aresta(A.v2, A.v1, A.peso, A.flag, A.descricao);
-                        int responsible2 = findResponsible(A.v2);
-                        if(responsible2 == this.id){
-                            if (this.criarAresta(A.v2,A.v1,A.peso,A.flag,A.descricao))
-                                return true;
-                            else{
-                                //caso ja exista o vertice criado ele somente altera.
-                                Aresta a2 = this.getAresta(A.v2,A.v1);
-                                updateAresta(A.v2,A.v1,aux);
-                            }
-
-                        }else if(startTransport(responsible)){
-                            try
-                            {
-                                if (clients[responsible2].criarAresta(A.v2,A.v1,A.peso,A.flag,A.descricao))
-                                    return true;
-                                else {
-                                    return clients[responsible2].updateAresta(A.v2, A.v1, aux);
-                                }
-                            }catch (TException e) {}
+                        if(this.getAresta(A.v2,A.v2) == null){
+                            setE.add(aux);
                         }
-                    }
-                    else if(!A.flag && a.flag){ //se era biderecional e agora não é mais
-                        Aresta aux = new Aresta(A.v2, A.v1, A.peso, false, A.descricao); //atualizo a aresta do outro lado para que ela n remova a aresta principal entrada na funçao deleteAresta
-                        int responsible2 = findResponsible(a.v2);
-                        if(responsible2 == this.id){
-                            for (Aresta a2 : setE) {
 
-                                if (a2.v2 == nomeV1 && a2.v1 == nomeV2) {
-                                    a2.flag = false;
-                                    this.delAresta(a2.v2,a2.v1); // remove a resta usando delAresta
-                                }
-                            }
-                        }else if(startTransport(responsible)){
-                            try{
-                                if(clients[responsible2].updateAresta(A.v2,A.v1,aux))
-                                    return clients[responsible2].delAresta(A.v2,A.v1); //garante que foi atualizado em outro servidor e remove
-                            }catch(TException e ) {}
-                        }
                     }
-
                     return true;
                 }
             }
-        }
-        else if(startTransport(responsible)){
-            try {
-                return clients[responsible].updateAresta(nomeV1, nomeV2, A);
+        }else if(startTransport(responsible)){
+            try{
+                if(clients[responsible].updateAresta(nomeV1,nomeV2,A)){
+                    return true;
+                }
+            }catch (TException t){
+                t.printStackTrace();
             }
-            catch(TException e){}
         }
-        return false; //Não encontrado
+        return false;
     }
 
     @Override
