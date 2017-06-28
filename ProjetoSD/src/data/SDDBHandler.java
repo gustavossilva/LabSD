@@ -315,10 +315,14 @@ public class SDDBHandler implements Operations.Iface, Closeable {
                     }
                     a.peso = A.peso;
                     a.descricao = A.descricao;
+                    if(A.flag && a.flag){
+                        this.getAresta(A.v2,A.v1,true).peso = A.peso;
+                        this.getAresta(A.v2,A.v1,true).descricao = A.descricao;
+                    }
                     if (A.flag && !a.flag) {
                         a.flag = true;
                         Aresta aux = new Aresta(A.v2, A.v1, A.peso, A.flag, A.descricao);
-                        if(this.getAresta(A.v2,A.v2) == null){
+                        if(this.getAresta(A.v2,A.v1,true) == null){
                             setE.add(aux);
                         }
 
@@ -366,26 +370,71 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     }
 
     @Override
-    public Aresta getAresta(int v1, int v2){
-        int responsible = findResponsible(v1);
-        if(responsible == this.id){
-            if(!setE.isEmpty()) {
-                for (Aresta a : setE) {
-                    if (a.v1 == v1 && a.v2 == v2) {
-                        return a;
-                    }
+    public Aresta getAresta(int v1, int v2,boolean first){
+        Aresta as = null;
+        if(!setE.isEmpty()){
+            for (Aresta a : setE) {
+                if (a.v1 == v1 && a.v2 == v2) {
+                    return a;
                 }
             }
-            return null;
         }
-        else if ( startTransport(responsible) ) {
-            try {
-                return this.clients[responsible].getAresta(v1,v2);
+        if(first) {
+            for (Operations.Client client : this.clients) {
+                System.out.println("entrei nessa parte");
+                if (client != null) {
+                    try {
+                        as = client.getAresta(v1, v2, false);
+                        System.out.println("Entrei "+this.id);
+                    } catch (TException e) {
+                    }
+
+                }
+            if(as != null){
+                System.out.println("retornei");
+                return as;
+                }
+
             }
-            catch (TException e) {}
         }
         return null;
     }
+
+//    @Override
+//    public Aresta getAresta(int v1, int v2){
+//        int responsible = findResponsible(v1);
+//        int responsible2 = findResponsible(v2);
+//        if(responsible == this.id){
+//            if(!setE.isEmpty()) {
+//                for (Aresta a : setE) {
+//                    if (a.v1 == v1 && a.v2 == v2) {
+//                        return a;
+//                    }
+//                }
+//            }
+//            if(responsible2 != this.id){
+//                if(startTransport(responsible2)){ //pode ser que seja um caso bidirecional, então testar
+//                    try{
+//                        Aresta not_inversa = this.clients[responsible2].getArestaAux(v2,v1,true); //ele est ábuscando pela inversa no servidor errado
+//                        //dessa forma eu encontrei o servidor certo para pegar a desejada
+//                        if(not_inversa != null && not_inversa.flag == true){
+//                            return this.clients[responsible2].getArestaAux(v1,v2,true);
+//                        }
+//                        else
+//                            return null;
+//                    }catch(TException e) {System.out.println(e +"invertida");}
+//                }
+//            }
+//            return null;
+//        }
+//        else if ( startTransport(responsible) ) {
+//            try {
+//                return this.clients[responsible].getAresta(v1,v2);
+//            }
+//            catch (TException e) {System.out.println(e +"sem inverter");}
+//        }
+//        return null;
+//    }
 
     @Override
     public String exibirGrafo(){
@@ -441,7 +490,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     @Override//Corrigir
     public List<Vertice> listarVerticesArestas(int v1, int v2) {
         ArrayList<Vertice> vertices = new ArrayList<>();
-        if(getAresta(v1,v2) !=null){
+        if(getAresta(v1,v2,true) !=null){
             vertices.add(getVertice(v1));
             vertices.add(getVertice(v2));
         }
@@ -519,7 +568,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
             for (Vertice neighbor : listarVizinhosVertice(current)) {
                 System.out.println("Neighbor: " + neighbor);
 
-                aux = getAresta(current, neighbor.getNome());
+                aux = getAresta(current, neighbor.getNome(),true);
 
                 if (aux != null) {
                     distance = distances.getOrDefault(current, Double.POSITIVE_INFINITY);
