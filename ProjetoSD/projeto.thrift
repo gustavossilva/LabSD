@@ -25,7 +25,7 @@ service Operations {
     bool updateVertice(1:i32 nomeUp,2:Vertice V),
     bool updateAresta(1:i32 nomeV1, 2:i32 nomeV2, 3:Aresta A),
     Vertice getVertice(1:i32 nome),
-    Aresta getAresta(1:i32 v1,2:i32 v2),
+    Aresta getAresta(1:i32 v1,2:i32 v2,3:bool flag),
     string exibirGrafo(),
     string exibirVertice(1:bool flag),
     string exibirAresta(1:bool flag),
