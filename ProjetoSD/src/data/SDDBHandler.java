@@ -34,7 +34,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         this.transports = new TTransport[total];
         this.id = id;
 
-        System.out.println(Thread.currentThread().getName() + ": handler " + id);
+//        System.out.println(Thread.currentThread().getName() + ": handler " + id);
 
         for (int i = 0; i < this.clients.length; i++) {
             if (i != this.id) {
@@ -381,17 +381,13 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         }
         if(first) {
             for (Operations.Client client : this.clients) {
-                System.out.println("entrei nessa parte");
                 if (client != null) {
                     try {
                         as = client.getAresta(v1, v2, false);
-                        System.out.println("Entrei "+this.id);
-                    } catch (TException e) {
-                    }
+                    } catch (TException e) {}
 
                 }
             if(as != null){
-                System.out.println("retornei");
                 return as;
                 }
 
@@ -399,42 +395,6 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         }
         return null;
     }
-
-//    @Override
-//    public Aresta getAresta(int v1, int v2){
-//        int responsible = findResponsible(v1);
-//        int responsible2 = findResponsible(v2);
-//        if(responsible == this.id){
-//            if(!setE.isEmpty()) {
-//                for (Aresta a : setE) {
-//                    if (a.v1 == v1 && a.v2 == v2) {
-//                        return a;
-//                    }
-//                }
-//            }
-//            if(responsible2 != this.id){
-//                if(startTransport(responsible2)){ //pode ser que seja um caso bidirecional, então testar
-//                    try{
-//                        Aresta not_inversa = this.clients[responsible2].getArestaAux(v2,v1,true); //ele est ábuscando pela inversa no servidor errado
-//                        //dessa forma eu encontrei o servidor certo para pegar a desejada
-//                        if(not_inversa != null && not_inversa.flag == true){
-//                            return this.clients[responsible2].getArestaAux(v1,v2,true);
-//                        }
-//                        else
-//                            return null;
-//                    }catch(TException e) {System.out.println(e +"invertida");}
-//                }
-//            }
-//            return null;
-//        }
-//        else if ( startTransport(responsible) ) {
-//            try {
-//                return this.clients[responsible].getAresta(v1,v2);
-//            }
-//            catch (TException e) {System.out.println(e +"sem inverter");}
-//        }
-//        return null;
-//    }
 
     @Override
     public String exibirGrafo(){
@@ -563,11 +523,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         while ( !next.isEmpty() ) {
             current = next.poll();
 
-            System.out.println("Current: " + current);
-
             for (Vertice neighbor : listarVizinhosVertice(current)) {
-                System.out.println("Neighbor: " + neighbor);
-
                 aux = getAresta(current, neighbor.getNome(),true);
 
                 if (aux != null) {
@@ -586,12 +542,13 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         if ( !parents.containsKey(nomeV2) )
             return String.format("Não existe caminho entre %d e %d", nomeV1, nomeV2);
 
-        String caminho = Integer.toString(nomeV2);
+        LinkedList<Integer> caminho = new LinkedList<>();
 
-        for (current = parents.get(nomeV2); current != nomeV1; current = parents.get(current))
-            caminho = String.format("%d, %s", current, caminho);
+        for (current = nomeV2; current != nomeV1; current = parents.get(current))
+            caminho.addFirst(current);
+        caminho.addFirst(nomeV1);
 
-        return caminho;
+        return caminho.toString();
     }
 
     @Override
