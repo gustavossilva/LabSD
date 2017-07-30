@@ -169,6 +169,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
 
         if (responsible == this.id) {
+
         }
 
         else if ( startTransport(responsible) ) {
@@ -180,37 +181,31 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         }
         return false;
     }
+
     @Override
     public boolean delAresta(int v1, int v2){
         int responsible1 = findResponsible(v1);
 
         if (responsible1 == this.id) {
-            if(this.setE.isEmpty())
-                return false; //se está vazio retorna falso
-            for(Aresta a:setE){
-                if(a.v1 == v1 && a.v2 == v2){
-                    setE.remove(a);
-                    //se é uma resta bidimensional, remove também.
-                    if(a.isFlag()){
-                        int responsible2 = findResponsible(v2);
-                        if(responsible2 == this.id) {
-                            Aresta aux = new Aresta(v2,v1,a.getPeso(),a.isFlag(),a.getDescricao());
-                            setE.remove(aux);
-                            return true;
-                        }else if (startTransport(responsible2)){
-                            try{
-                                return this.clients[responsible2].delAresta(a.v2,a.v1);
-                            }catch(TException e){
-                                System.out.println("Erro na comunicação com o servidor" + responsible2);
-                            }
-                        }
-                    }else {
-                        return true;
+            Aresta a = null;
+
+            if(a.isFlag()){
+                int responsible2 = findResponsible(v2);
+                if(responsible2 == this.id) {
+                    Aresta aux = new Aresta(v2,v1,a.getPeso(),a.isFlag(),a.getDescricao());
+                    setE.remove(aux);
+                    return true;
+                }else if (startTransport(responsible2)){
+                    try{
+                        return this.clients[responsible2].delAresta(a.v2,a.v1);
+                    }catch(TException e){
+                        System.out.println("Erro na comunicação com o servidor" + responsible2);
                     }
                 }
             }
+        }
 
-        }else if(startTransport(responsible1)){
+        else if(startTransport(responsible1)){
             try{
                 return this.clients[responsible1].delAresta(v1,v2);
             }catch(TException e){

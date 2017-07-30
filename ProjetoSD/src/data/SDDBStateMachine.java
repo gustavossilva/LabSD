@@ -81,7 +81,7 @@ public class SDDBStateMachine extends StateMachine {
             //for(Aresta a:G.A) {
             for(Aresta a:setE){
                 if(a.v1 == dv.nome || a.v2 == dv.nome){
-//                    this.deletarAresta(a.v1,a.v2);
+                    this.deletarAresta(a.v1,a.v2);
                     if(setE.isEmpty()){
                         break;
                     }
@@ -93,9 +93,32 @@ public class SDDBStateMachine extends StateMachine {
                     return true;
                 }
             }
+
+            return false;
         }
 
         catch (Throwable t) { return false; }
+        finally { commit.release(); }
+    }
+
+    public Aresta deletarAresta(int v1, int v2) {
+        for (Aresta a:setE) {
+            if(a.v1 == v1 && a.v2 == v2){
+                setE.remove(a);
+                return a;
+            }
+        }
+
+        return null;
+    }
+
+    public Aresta deletarAresta(Commit<DeletarAresta> commit) {
+        try {
+            DeletarAresta da = commit.operation();
+            return this.deletarAresta(da.v1, da.v2);
+        }
+
+        catch (Throwable t) { return null; }
         finally { commit.release(); }
     }
 }
@@ -135,6 +158,16 @@ class DeletarVertice implements Command<Void> {
 
     public DeletarVertice(int nome) {
         this.nome = nome;
+    }
+}
+
+class DeletarAresta implements Command<Void> {
+    public final int v1;
+    public final int v2;
+
+    public DeletarAresta(int v1, int v2) {
+        this.v1 = v1;
+        this.v2 = v2;
     }
 }
 
