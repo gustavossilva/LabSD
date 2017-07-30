@@ -144,10 +144,10 @@ public class SDDBStateMachine extends StateMachine {
 }
 
 class CriarVertice implements Command<Void> {
-    public final int cor;
-    public final int nome;
-    public final double peso;
-    public final String descricao;
+    final int cor;
+    final int nome;
+    final double peso;
+    final String descricao;
 
     public CriarVertice(int nome, int cor, String descricao, double peso) {
         this.cor = cor;
@@ -158,11 +158,11 @@ class CriarVertice implements Command<Void> {
 }
 
 class CriarAresta implements Command<Void> {
-    public final int v1;
-    public final int v2;
-    public final double peso;
-    public final boolean flag;
-    public final String descricao;
+    final int v1;
+    final int v2;
+    final double peso;
+    final boolean flag;
+    final String descricao;
 
     public CriarAresta(int v1, int v2, double peso, boolean flag, String descricao) {
         this.v1 = v1;
@@ -174,7 +174,7 @@ class CriarAresta implements Command<Void> {
 }
 
 class DeletarVertice implements Command<Void> {
-    public final int nome;
+    final int nome;
 
     public DeletarVertice(int nome) {
         this.nome = nome;
@@ -182,8 +182,8 @@ class DeletarVertice implements Command<Void> {
 }
 
 class DeletarAresta implements Command<Void> {
-    public final int v1;
-    public final int v2;
+    final int v1;
+    final int v2;
 
     public DeletarAresta(int v1, int v2) {
         this.v1 = v1;
@@ -192,8 +192,8 @@ class DeletarAresta implements Command<Void> {
 }
 
 class AtualizarVertice implements Command<Void> {
-    public final int nome;
-    public final Vertice vertice;
+    final int nome;
+    final Vertice vertice;
 
     public AtualizarVertice(int nome, Vertice vertice) {
         this.nome = nome;
