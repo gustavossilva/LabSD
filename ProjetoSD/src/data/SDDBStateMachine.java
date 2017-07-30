@@ -1,6 +1,7 @@
 package data;
 
 import io.atomix.copycat.Command;
+import io.atomix.copycat.Query;
 import io.atomix.copycat.server.Commit;
 import io.atomix.copycat.server.StateMachine;
 import models.Aresta;
@@ -178,6 +179,25 @@ public class SDDBStateMachine extends StateMachine {
         catch (Throwable t) { return false; }
         finally { commit.release(); }
     }
+
+    public Vertice buscarVertice(Commit<BuscarVertice> commit) {
+        try {
+            BuscarVertice bv = commit.operation();
+
+            if (!setV.isEmpty()) {
+                for (Vertice v : setV) {
+                    if (v.nome == bv.nome) {
+                        return v;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        catch (Throwable t) { return null; }
+        finally { commit.release(); }
+    }
 }
 
 class CriarVertice implements Command<Void> {
@@ -247,6 +267,14 @@ class AtualizarAresta implements Command<Void> {
         this.nomeV1 = nomeV1;
         this.nomeV2 = nomeV2;
         this.aresta = aresta;
+    }
+}
+
+class BuscarVertice implements Query<Void> {
+    final int nome;
+
+    public BuscarVertice(int nome) {
+        this.nome = nome;
     }
 }
 

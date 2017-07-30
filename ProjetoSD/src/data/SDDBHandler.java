@@ -272,13 +272,6 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
 
         if (responsible == this.id) {
-            if (!setV.isEmpty()) {
-                for (Vertice v : setV) {
-                    if (v.nome == nome) {
-                        return v;
-                    }
-                }
-            }
         }
 
         else if ( startTransport(responsible) ) {
