@@ -1,5 +1,6 @@
 package data;
 
+import io.atomix.copycat.server.StateMachine;
 import models.*;
 
 import org.apache.thrift.TException;

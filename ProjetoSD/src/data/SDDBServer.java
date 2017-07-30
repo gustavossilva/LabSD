@@ -1,5 +1,6 @@
 package data;
 
+import io.atomix.copycat.server.CopycatServer;
 import models.Operations;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
@@ -16,7 +17,6 @@ import java.util.ArrayList;
  */
 public class SDDBServer {
     final static int BASE_PORT = 9080;
-
     public static void main(String [] args){
         final int N_SERVERS = (args.length > 0) ? Integer.parseInt(args[0]) : 3;
 
