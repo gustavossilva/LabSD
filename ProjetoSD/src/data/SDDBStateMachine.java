@@ -73,6 +73,31 @@ public class SDDBStateMachine extends StateMachine {
         catch (Throwable t) { return false; }
         finally { commit.release(); }
     }
+
+    public boolean deletarVertice(Commit<DeletarVertice> commit) {
+        try {
+            DeletarVertice dv = commit.operation();
+
+            //for(Aresta a:G.A) {
+            for(Aresta a:setE){
+                if(a.v1 == dv.nome || a.v2 == dv.nome){
+//                    this.deletarAresta(a.v1,a.v2);
+                    if(setE.isEmpty()){
+                        break;
+                    }
+                }
+            }
+            for(Vertice v:setV){
+                if (v.nome == dv.nome){
+                    setV.remove(v);
+                    return true;
+                }
+            }
+        }
+
+        catch (Throwable t) { return false; }
+        finally { commit.release(); }
+    }
 }
 
 class CriarVertice implements Command<Void> {
@@ -102,6 +127,14 @@ class CriarAresta implements Command<Void> {
         this.peso = peso;
         this.flag = flag;
         this.descricao = descricao;
+    }
+}
+
+class DeletarVertice implements Command<Void> {
+    public final int nome;
+
+    public DeletarVertice(int nome) {
+        this.nome = nome;
     }
 }
 

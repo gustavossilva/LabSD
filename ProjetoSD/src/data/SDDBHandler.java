@@ -144,13 +144,14 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     }
 
     @Override
-        public boolean criarAresta(int v1, int v2, double peso, boolean flag, String descricao){
+    public boolean criarAresta(int v1, int v2, double peso, boolean flag, String descricao){
         int responsible1 = findResponsible(v1); //pego onde v1 está
+
         System.out.println("[ARESTA!SERVER-" + this.id + "] responsible = " + responsible1);
 
         if (responsible1 == this.id) { //checa se o vertice fonte está nesse servidor, caso o contrário passa para outro
-
         }
+
         else if (startTransport(responsible1)){
             try {
                 return this.clients[responsible1].criarAresta(v1, v2, peso, flag, descricao);
@@ -164,24 +165,12 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     @Override
     public boolean delVertice(int nome){
         int responsible = findResponsible(nome);
+
         System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
+
         if (responsible == this.id) {
-            //for(Aresta a:G.A) {
-            for(Aresta a:setE){
-                if(a.v1 == nome || a.v2 == nome){
-                    delAresta(a.v1,a.v2);
-                    if(setE.isEmpty()){
-                        break;
-                    }
-                }
-            }
-            for(Vertice v:setV){
-                if (v.nome == nome){
-                    setV.remove(v);
-                    return true;
-                }
-            }
         }
+
         else if ( startTransport(responsible) ) {
             try {
                 return this.clients[responsible].delVertice(nome);
