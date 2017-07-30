@@ -18,6 +18,16 @@ public class SDDBStateMachine extends StateMachine {
     private RWSyncCollection<Aresta> setE = new RWSyncCollection<>();
     private RWSyncCollection<Vertice> setV = new RWSyncCollection<>();
 
+    //Checa se já existe a Aresta
+    public boolean checaIgualdade(Aresta A){
+        for(Aresta a:setE){
+            if(a.v1 == A.v1 && a.v2 == A.v2){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean criarVertice(Commit<CriarVertice> commit) {
         try {
             CriarVertice cv = commit.operation();
@@ -38,6 +48,31 @@ public class SDDBStateMachine extends StateMachine {
         catch (Throwable t) { return false; }
         finally { commit.release(); }
     }
+
+    public boolean criarAresta(Commit<CriarAresta> commit) {
+        try {
+            CriarAresta ca = commit.operation();
+            Aresta aux = new Aresta(ca.v1, ca.v2, ca.peso, ca.flag, ca.descricao);
+
+            // o vértice fonte está nesse servidor, então insere
+            if (!checaIgualdade(aux))
+                setE.add(aux);
+            if (ca.flag) {
+                Aresta aux2 = new Aresta(ca.v2, ca.v1, ca.peso, ca.flag, ca.descricao);
+                if (!checaIgualdade(aux2)) {
+                    setE.add(aux2);
+                    return true;
+                }else{
+                    setE.remove(aux);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        catch (Throwable t) { return false; }
+        finally { commit.release(); }
+    }
 }
 
 class CriarVertice implements Command<Void> {
@@ -50,6 +85,22 @@ class CriarVertice implements Command<Void> {
         this.cor = cor;
         this.nome = nome;
         this.peso = peso;
+        this.descricao = descricao;
+    }
+}
+
+class CriarAresta implements Command<Void> {
+    public final int v1;
+    public final int v2;
+    public final double peso;
+    public final boolean flag;
+    public final String descricao;
+
+    public CriarAresta(int v1, int v2, double peso, boolean flag, String descricao) {
+        this.v1 = v1;
+        this.v2 = v2;
+        this.peso = peso;
+        this.flag = flag;
         this.descricao = descricao;
     }
 }

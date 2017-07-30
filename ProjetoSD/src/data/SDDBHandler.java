@@ -16,7 +16,6 @@ import java.util.*;
 
 import static java.lang.Math.abs;
 
-
 /**
  * Created by gustavovm on 5/21/17.
  */
@@ -145,25 +144,12 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     }
 
     @Override
-    public boolean criarAresta(int v1, int v2, double peso, boolean flag, String descricao){
+        public boolean criarAresta(int v1, int v2, double peso, boolean flag, String descricao){
         int responsible1 = findResponsible(v1); //pego onde v1 está
         System.out.println("[ARESTA!SERVER-" + this.id + "] responsible = " + responsible1);
-        Aresta aux = new Aresta(v1, v2, peso, flag, descricao);
+
         if (responsible1 == this.id) { //checa se o vertice fonte está nesse servidor, caso o contrário passa para outro
-            // o vértice fonte está nesse servidor, então insere
-            if (!checaIgualdade(aux))
-                setE.add(aux);
-            if (flag) {
-                Aresta aux2 = new Aresta(v2, v1, peso, flag, descricao);
-                if (!checaIgualdade(aux2)) {
-                    setE.add(aux2);
-                    return true;
-                }else{
-                    setE.remove(aux);
-                    return false;
-                }
-            }
-            return true;
+
         }
         else if (startTransport(responsible1)){
             try {
@@ -274,15 +260,6 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         }
 
         return false; //Não encontrado
-    }
-    //Checa se já existe a Aresta
-    public boolean checaIgualdade(Aresta A){
-        for(Aresta a:setE){
-            if(a.v1 == A.v1 && a.v2 == A.v2){
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
@@ -552,7 +529,6 @@ public class SDDBHandler implements Operations.Iface, Closeable {
             }
         }
     }
-    //TODO Adicionar Dijkstra para menor caminho ou algum outro algorítmo
     //TODO Mudar a flag do direcionamento dependendo do update, ou da criação de uma nova aresta que cria um bi-direcionamento
     //TODO tratar alguns minor bugs
 
