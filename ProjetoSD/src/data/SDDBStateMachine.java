@@ -222,7 +222,7 @@ public class SDDBStateMachine extends StateMachine {
     }
 }
 
-class CriarVertice implements Command<Void> {
+class CriarVertice implements Command<Boolean> {
     final int cor;
     final int nome;
     final double peso;
@@ -236,7 +236,7 @@ class CriarVertice implements Command<Void> {
     }
 }
 
-class CriarAresta implements Command<Void> {
+class CriarAresta implements Command<Boolean> {
     final int v1;
     final int v2;
     final double peso;
@@ -252,7 +252,7 @@ class CriarAresta implements Command<Void> {
     }
 }
 
-class DeletarVertice implements Command<Void> {
+class DeletarVertice implements Command<Boolean> {
     final int nome;
 
     public DeletarVertice(int nome) {
@@ -260,7 +260,7 @@ class DeletarVertice implements Command<Void> {
     }
 }
 
-class DeletarAresta implements Command<Void> {
+class DeletarAresta implements Command<Aresta> {
     final int v1;
     final int v2;
 
@@ -270,7 +270,7 @@ class DeletarAresta implements Command<Void> {
     }
 }
 
-class AtualizarVertice implements Command<Void> {
+class AtualizarVertice implements Command<Boolean> {
     final int nome;
     final Vertice vertice;
 
@@ -280,7 +280,7 @@ class AtualizarVertice implements Command<Void> {
     }
 }
 
-class AtualizarAresta implements Command<Void> {
+class AtualizarAresta implements Command<Boolean> {
     final int nomeV1;
     final int nomeV2;
     final Aresta aresta;
@@ -292,7 +292,7 @@ class AtualizarAresta implements Command<Void> {
     }
 }
 
-class BuscarVertice implements Query<Void> {
+class BuscarVertice implements Query<Vertice> {
     final int nome;
 
     public BuscarVertice(int nome) {
@@ -300,7 +300,7 @@ class BuscarVertice implements Query<Void> {
     }
 }
 
-class BuscarAresta implements Query<Void> {
+class BuscarAresta implements Query<Aresta> {
     final int nomeV1;
     final int nomeV2;
 
