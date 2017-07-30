@@ -26,13 +26,15 @@ import static java.lang.Math.abs;
 public class SDDBHandler implements Operations.Iface, Closeable {
     private final RWSyncCollection<Aresta> setE = new RWSyncCollection<>();
     private final RWSyncCollection<Vertice> setV = new RWSyncCollection<>();
+
     private final Operations.Client[] clients;
     private final TTransport[] transports;
-    private CopycatClient.Builder dataBuilder;
-    private CopycatClient dataClient;
-    private Collection<Address> cluster = Arrays.asList(new Address("localhost",25000));
-    private CompletableFuture<CopycatClient> future;
     private final int id;
+
+    private final CopycatClient.Builder dataBuilder;
+    private final CopycatClient dataClient;
+    private final Collection<Address> cluster = Arrays.asList(new Address("localhost",25000));
+    private final CompletableFuture<CopycatClient> future;
 
     public SDDBHandler(int id, int total) {
         this.clients = new Operations.Client[total];
@@ -140,6 +142,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
 
         if (responsible == this.id) {
+            return this.dataClient.submit(new CriarVertice(nome, cor, descricao, peso)).join();
         }
 
         else if ( startTransport(responsible) ) {
@@ -162,6 +165,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         System.out.println("[ARESTA!SERVER-" + this.id + "] responsible = " + responsible1);
 
         if (responsible1 == this.id) { //checa se o vertice fonte está nesse servidor, caso o contrário passa para outro
+            return this.dataClient.submit(new CriarAresta(v1, v2, peso, flag, descricao)).join();
         }
 
         else if (startTransport(responsible1)){
@@ -181,7 +185,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
 
         if (responsible == this.id) {
-
+            return this.dataClient.submit(new DeletarVertice(nome)).join();
         }
 
         else if ( startTransport(responsible) ) {
@@ -199,7 +203,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         int responsible1 = findResponsible(v1);
 
         if (responsible1 == this.id) {
-            Aresta a = null;
+            Aresta a = this.dataClient.submit(new DeletarAresta(v1, v2)).join();
 
             if(a.isFlag()){
                 int responsible2 = findResponsible(v2);
@@ -237,7 +241,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
 
         if (responsible == this.id) {
-
+            return this.dataClient.submit(new AtualizarVertice(nomeUp, V)).join();
         }
 
         else if ( startTransport(responsible) ) {
@@ -263,6 +267,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         int responsible = findResponsible(nomeV1);
 
         if(responsible == this.id) {
+            return this.dataClient.submit(new AtualizarAresta(nomeV1, nomeV2, A)).join();
         }
 
         else if(startTransport(responsible)){
@@ -284,6 +289,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
 
         if (responsible == this.id) {
+            return this.dataClient.submit(new BuscarVertice(nome)).join();
         }
 
         else if ( startTransport(responsible) ) {
@@ -299,7 +305,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
     @Override
     public Aresta getAresta(int v1, int v2,boolean first){
-        Aresta as = null;
+        Aresta as = this.dataClient.submit(new BuscarAresta(v1, v2)).join();
 
         if(first) {
             for (Operations.Client client : this.clients) {
@@ -309,10 +315,9 @@ public class SDDBHandler implements Operations.Iface, Closeable {
                     } catch (TException e) {}
 
                 }
-            if(as != null){
-                return as;
+                if(as != null){
+                    return as;
                 }
-
             }
         }
         return null;
