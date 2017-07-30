@@ -288,13 +288,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     @Override
     public Aresta getAresta(int v1, int v2,boolean first){
         Aresta as = null;
-        if(!setE.isEmpty()){
-            for (Aresta a : setE) {
-                if (a.v1 == v1 && a.v2 == v2) {
-                    return a;
-                }
-            }
-        }
+
         if(first) {
             for (Operations.Client client : this.clients) {
                 if (client != null) {

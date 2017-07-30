@@ -198,6 +198,28 @@ public class SDDBStateMachine extends StateMachine {
         catch (Throwable t) { return null; }
         finally { commit.release(); }
     }
+
+    public Aresta buscarAresta(int v1, int v2) {
+        if(!setE.isEmpty()){
+            for (Aresta a : setE) {
+                if (a.v1 == v1 && a.v2 == v2) {
+                    return a;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public Aresta buscarAresta(Commit<BuscarAresta> commit) {
+        try {
+            BuscarAresta ba = commit.operation();
+            return this.buscarAresta(ba.nomeV1, ba.nomeV2);
+        }
+
+        catch (Throwable t) { return null; }
+        finally { commit.release(); }
+    }
 }
 
 class CriarVertice implements Command<Void> {
@@ -275,6 +297,16 @@ class BuscarVertice implements Query<Void> {
 
     public BuscarVertice(int nome) {
         this.nome = nome;
+    }
+}
+
+class BuscarAresta implements Query<Void> {
+    final int nomeV1;
+    final int nomeV2;
+
+    public BuscarAresta(int nomeV1, int nomeV2) {
+        this.nomeV1 = nomeV1;
+        this.nomeV2 = nomeV2;
     }
 }
 
