@@ -141,6 +141,43 @@ public class SDDBStateMachine extends StateMachine {
         catch (Throwable t) { return false; }
         finally { commit.release(); }
     }
+
+    public boolean atualizarAresta(Commit<AtualizarAresta> commit) {
+        try {
+            AtualizarAresta aa = commit.operation();
+
+            for (Aresta a : setE) {
+                if (a.v1 == aa.nomeV1 && a.v2 == aa.nomeV2) {
+                    if(!aa.aresta.flag && a.flag){
+                        Aresta aux = new Aresta(a.v2, a.v1, a.peso, a.flag, a.descricao);
+                        setE.remove(aux);
+                        a.flag = false;
+                    }
+                    a.peso = aa.aresta.peso;
+                    a.descricao = aa.aresta.descricao;
+                    if(aa.aresta.flag && a.flag){
+//                        this.getAresta(aa.aresta.v2, aa.aresta.v1,true).peso = aa.aresta.peso;
+//                        this.getAresta(aa.aresta.v2, aa.aresta.v1,true).descricao = aa.aresta.descricao;
+                    }
+                    if (aa.aresta.flag && !a.flag) {
+                        a.flag = true;
+                        Aresta aux = new Aresta(aa.aresta.v2, aa.aresta.v1, aa.aresta.peso, aa.aresta.flag, aa.aresta.descricao);
+                        /*if(this.getAresta(A.v2,A.v1,true) == null){
+                            setE.add(aux);
+                        }*/
+
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        catch (Throwable t) { return false; }
+        finally { commit.release(); }
+    }
 }
 
 class CriarVertice implements Command<Void> {
@@ -198,6 +235,18 @@ class AtualizarVertice implements Command<Void> {
     public AtualizarVertice(int nome, Vertice vertice) {
         this.nome = nome;
         this.vertice = vertice;
+    }
+}
+
+class AtualizarAresta implements Command<Void> {
+    final int nomeV1;
+    final int nomeV2;
+    final Aresta aresta;
+
+    public AtualizarAresta(int nomeV1, int nomeV2, Aresta aresta) {
+        this.nomeV1 = nomeV1;
+        this.nomeV2 = nomeV2;
+        this.aresta = aresta;
     }
 }
 
