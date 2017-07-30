@@ -1,8 +1,8 @@
 package data;
 
-import io.atomix.copycat.server.StateMachine;
-import models.*;
-
+import models.Aresta;
+import models.Operations;
+import models.Vertice;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -10,12 +10,9 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
-import java.io.*;
+import java.io.Closeable;
 import java.security.MessageDigest;
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static java.lang.Math.abs;
 
@@ -24,8 +21,8 @@ import static java.lang.Math.abs;
  * Created by gustavovm on 5/21/17.
  */
 public class SDDBHandler implements Operations.Iface, Closeable {
-    private RWSyncCollection<Aresta> setE = new RWSyncCollection<>();
-    private RWSyncCollection<Vertice> setV = new RWSyncCollection<>();
+    private final RWSyncCollection<Aresta> setE = new RWSyncCollection<>();
+    private final RWSyncCollection<Vertice> setV = new RWSyncCollection<>();
     private final Operations.Client[] clients;
     private final TTransport[] transports;
     private final int id;
@@ -86,7 +83,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     //Parte nova
     @Override
     public void carregaGrafo(String caminho){
-        Object aux = null;
+        /*Object aux = null;
         Object aux2 = null;
         try{
             FileInputStream restFile = new FileInputStream(caminho+"A.txt");
@@ -103,14 +100,14 @@ public class SDDBHandler implements Operations.Iface, Closeable {
             stream2.close();
         }catch (Exception e){
             e.printStackTrace();
-        }
+        }*/
     }
 
     //Cria um novo grafo caso nenhum tenha sido salvo (ou inicializado ainda)
     //Neste caso a função é usada de inicio (tanto parar inicializar, quanto para salvar)
     @Override
     public synchronized void salvaGrafo(String caminho){
-        try{
+        /*try{
             FileOutputStream saveFile = new FileOutputStream(caminho+"A.txt");
             ObjectOutputStream stream = new ObjectOutputStream(saveFile);
             FileOutputStream saveFile2 = new FileOutputStream(caminho+"V.txt");
@@ -121,26 +118,17 @@ public class SDDBHandler implements Operations.Iface, Closeable {
             stream.close();
         } catch (IOException exc){
             exc.printStackTrace();
-        }
+        }*/
     }
 
     //Fim parte nova
     @Override
     public boolean criarVertice(int nome, int cor, String descricao, double peso){
         int responsible = findResponsible(nome);
-        Vertice v = new Vertice(nome,cor,descricao,peso);
 
         System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
 
         if (responsible == this.id) {
-            if (setV != null) {
-                for (Vertice ve : setV) {
-                    if (ve.nome == nome) { //Nome já existente
-                        return false;
-                    }
-                }
-                setV.add(v);
-            }
         }
 
         else if ( startTransport(responsible) ) {
@@ -568,103 +556,4 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     //TODO Mudar a flag do direcionamento dependendo do update, ou da criação de uma nova aresta que cria um bi-direcionamento
     //TODO tratar alguns minor bugs
 
-}
-
-
-class RWSyncCollection<E> implements Collection<E>,Serializable {
-    private final ArrayList<E> internal = new ArrayList<>();
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
-    private final Lock read = lock.readLock();
-    private final Lock write = lock.writeLock();
-
-    @Override
-    public int size() {
-        this.read.lock();
-        try { return this.internal.size(); }
-        finally { this.read.unlock(); }
-    }
-
-    @Override
-    public boolean isEmpty() {
-        this.read.lock();
-        try { return this.internal.isEmpty(); }
-        finally { this.read.unlock(); }
-    }
-
-    @Override
-    public boolean contains(Object o) {
-        this.read.lock();
-        try { return this.internal.contains(o); }
-        finally { this.read.unlock(); }
-    }
-
-    @Override
-    public Iterator<E> iterator() {
-        this.read.lock();
-        try { return this.internal.iterator(); }
-        finally { this.read.unlock(); }
-    }
-
-    @Override
-    public Object[] toArray() {
-        this.read.lock();
-        try { return this.internal.toArray(); }
-        finally { this.read.unlock(); }
-    }
-
-    @Override
-    public <T> T[] toArray(T[] ts) {
-        this.read.lock();
-        try { return this.internal.toArray(ts); }
-        finally { this.read.unlock(); }
-    }
-
-    @Override
-    public boolean add(E e) {
-        this.write.lock();
-        try { return this.internal.add(e); }
-        finally { this.write.unlock(); }
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        this.write.lock();
-        try { return this.internal.remove(o); }
-        finally { this.write.unlock(); }
-    }
-
-    @Override
-    public boolean containsAll(Collection<?> collection) {
-        this.read.lock();
-        try { return this.internal.containsAll(collection); }
-        finally { this.read.unlock(); }
-    }
-
-    @Override
-    public boolean addAll(Collection<? extends E> collection) {
-        this.write.lock();
-        try { return this.internal.addAll(collection); }
-        finally { this.write.unlock(); }
-    }
-
-    @Override
-    public boolean retainAll(Collection<?> collection) {
-        this.write.lock();
-        try { return this.internal.retainAll(collection); }
-        finally { this.write.unlock(); }
-    }
-
-    @Override
-    public boolean removeAll(Collection<?> collection) {
-        this.write.lock();
-        try { return this.internal.removeAll(collection); }
-        finally { this.write.unlock(); }
-    }
-
-    @Override
-    public void clear() {
-        this.write.lock();
-        try { this.internal.clear(); }
-        finally { this.write.unlock(); }
-    }
 }
