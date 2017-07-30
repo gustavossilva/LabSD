@@ -25,6 +25,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     private final Operations.Client[] clients;
     private final TTransport[] transports;
     private final int id;
+
     public SDDBHandler(int id, int total) {
         this.clients = new Operations.Client[total];
         this.transports = new TTransport[total];
@@ -224,14 +225,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
 
         if (responsible == this.id) {
-            for(Vertice v:setV){
-                if(v.nome == nomeUp){
-                    v.cor = V.cor;
-                    v.descricao = V.descricao;
-                    v.peso = V.peso;
-                    return true;
-                }
-            }
+
         }
 
         else if ( startTransport(responsible) ) {

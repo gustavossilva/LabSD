@@ -121,6 +121,26 @@ public class SDDBStateMachine extends StateMachine {
         catch (Throwable t) { return null; }
         finally { commit.release(); }
     }
+
+    public boolean atualizarVertice(Commit<AtualizarVertice> commit) {
+        try {
+            AtualizarVertice av = commit.operation();
+
+            for(Vertice v:setV){
+                if(v.nome == av.nome){
+                    v.cor = av.vertice.cor;
+                    v.descricao = av.vertice.descricao;
+                    v.peso = av.vertice.peso;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        catch (Throwable t) { return false; }
+        finally { commit.release(); }
+    }
 }
 
 class CriarVertice implements Command<Void> {
@@ -168,6 +188,16 @@ class DeletarAresta implements Command<Void> {
     public DeletarAresta(int v1, int v2) {
         this.v1 = v1;
         this.v2 = v2;
+    }
+}
+
+class AtualizarVertice implements Command<Void> {
+    public final int nome;
+    public final Vertice vertice;
+
+    public AtualizarVertice(int nome, Vertice vertice) {
+        this.nome = nome;
+        this.vertice = vertice;
     }
 }
 
