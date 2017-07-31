@@ -1,6 +1,5 @@
 package data;
 
-import io.atomix.copycat.server.StateMachine;
 import models.*;
 
 import org.apache.thrift.TException;
@@ -29,7 +28,6 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     private final Operations.Client[] clients;
     private final TTransport[] transports;
     private final int id;
-
     public SDDBHandler(int id, int total) {
         this.clients = new Operations.Client[total];
         this.transports = new TTransport[total];

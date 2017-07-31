@@ -1,5 +1,6 @@
 package data;
 
+import io.atomix.catalyst.transport.Address;
 import io.atomix.copycat.server.CopycatServer;
 import models.Operations;
 import org.apache.thrift.server.TServer;
@@ -11,6 +12,8 @@ import org.apache.thrift.transport.TTransportException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Created by gustavovm on 5/21/17.
