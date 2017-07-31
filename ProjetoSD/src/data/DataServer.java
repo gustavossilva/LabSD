@@ -9,6 +9,7 @@ import io.atomix.copycat.server.storage.Storage;
 import io.atomix.copycat.server.storage.StorageLevel;
 
 import java.io.File;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Created by gustavovm on 7/30/17.
@@ -17,6 +18,7 @@ public class DataServer {
     private Address address;
     private CopycatServer.Builder builder;
     private CopycatServer server;
+    private CompletableFuture<CopycatServer> future;
 
     public DataServer(String ip, int port){
         address = new Address(ip,port);
@@ -30,6 +32,8 @@ public class DataServer {
 
         try{
             this.server = this.builder.build();
+            this.future = server.bootstrap();
+            future.join();
             return true;
         }catch (Exception e){
             e.printStackTrace();
