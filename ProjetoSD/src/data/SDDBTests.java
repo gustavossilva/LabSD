@@ -39,11 +39,7 @@ public final class SDDBTests {
                 assert client.criarAresta(2, 5, 2, true, "E - G") : "Aresta E - G";
             }
 
-            catch (AssertionError e) {
-                System.err.println(e);
-            }
-
-            System.out.println( client.exibirAresta(false) );
+            catch (AssertionError e) { System.err.println(e); }
         }
 
         catch (TException e) {
