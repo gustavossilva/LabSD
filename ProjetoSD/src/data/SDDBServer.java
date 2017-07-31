@@ -6,6 +6,7 @@ import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -20,8 +21,10 @@ public class SDDBServer {
 
         if (args.length > 1) {
             final int ID = Integer.parseInt(args[1]);
+
             data = new DataServer("localhost",BASE_DATA_PORT + ID);
             data.initDServer(1,"logs");
+
             try (SDDBHandler handler = new SDDBHandler(ID, N_SERVERS)) {
                 Operations.Processor processor = new Operations.Processor(handler);
                 TServerTransport transport = new TServerSocket(BASE_PORT + ID);
@@ -36,8 +39,9 @@ public class SDDBServer {
         else
             for (int i = 0; i < N_SERVERS; i++) {
                 try {
-                    new ProcessBuilder("java", "-jar", "Server.jar",
-                                        Integer.toString(N_SERVERS), Integer.toString(i)).start();
+                    ProcessBuilder b = new ProcessBuilder("java", "-jar", "Server.jar",
+                                                          Integer.toString(N_SERVERS), Integer.toString(i));
+                    b.redirectOutput(new File( String.format("server%d.log", i + 1) )).start();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
