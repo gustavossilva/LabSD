@@ -1,5 +1,8 @@
 package data;
 
+import io.atomix.catalyst.transport.Address;
+import io.atomix.catalyst.transport.netty.NettyTransport;
+import io.atomix.copycat.client.CopycatClient;
 import models.Aresta;
 import models.Operations;
 import models.Vertice;
@@ -13,6 +16,7 @@ import org.apache.thrift.transport.TTransportException;
 import java.io.Closeable;
 import java.security.MessageDigest;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 import static java.lang.Math.abs;
 
@@ -24,13 +28,21 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     private final RWSyncCollection<Vertice> setV = new RWSyncCollection<>();
     private final Operations.Client[] clients;
     private final TTransport[] transports;
+    private CopycatClient.Builder dataBuilder;
+    private CopycatClient dataClient;
+    private Collection<Address> cluster = Arrays.asList(new Address("localhost",25000));
+    private CompletableFuture<CopycatClient> future;
     private final int id;
 
     public SDDBHandler(int id, int total) {
         this.clients = new Operations.Client[total];
         this.transports = new TTransport[total];
         this.id = id;
-
+        this.dataBuilder = CopycatClient.builder();
+        this.dataBuilder.withTransport(NettyTransport.builder().withThreads(1).build());
+        this.dataClient = dataBuilder.build();
+        this.future = dataClient.connect(cluster);
+        this.future.join();
 //        System.out.println(Thread.currentThread().getName() + ": handler " + id);
 
         for (int i = 0; i < this.clients.length; i++) {
