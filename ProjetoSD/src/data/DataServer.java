@@ -15,19 +15,21 @@ import java.io.File;
  */
 public class DataServer {
     private Address address;
+    private CopycatServer.Builder builder;
+    private CopycatServer server;
 
     public DataServer(String ip, int port){
         address = new Address(ip,port);
     }
 
     public boolean initDServer(int ThreadNum, String fileDir){
-        CopycatServer.Builder builder = CopycatServer.builder(address);
-        builder.withStateMachine(SDDBStateMachine::new);
-        builder.withTransport(NettyTransport.builder().withThreads(ThreadNum).build());
-        builder.withStorage(Storage.builder().withDirectory(new File(fileDir)).withStorageLevel(StorageLevel.DISK).build());
+        this.builder = CopycatServer.builder(address);
+        this.builder.withStateMachine(SDDBStateMachine::new);
+        this.builder.withTransport(NettyTransport.builder().withThreads(ThreadNum).build());
+        this.builder.withStorage(Storage.builder().withDirectory(new File(fileDir)).withStorageLevel(StorageLevel.DISK).build());
 
         try{
-            CopycatServer server = builder.build();
+            this.server = this.builder.build();
             return true;
         }catch (Exception e){
             e.printStackTrace();
