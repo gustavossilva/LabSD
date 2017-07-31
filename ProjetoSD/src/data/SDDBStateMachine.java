@@ -1,6 +1,7 @@
 package data;
 
 import io.atomix.copycat.Command;
+import io.atomix.copycat.Query;
 import io.atomix.copycat.server.Commit;
 import io.atomix.copycat.server.StateMachine;
 import models.Aresta;
@@ -121,13 +122,111 @@ public class SDDBStateMachine extends StateMachine {
         catch (Throwable t) { return null; }
         finally { commit.release(); }
     }
+
+    public boolean atualizarVertice(Commit<AtualizarVertice> commit) {
+        try {
+            AtualizarVertice av = commit.operation();
+
+            for(Vertice v:setV){
+                if(v.nome == av.nome){
+                    v.cor = av.vertice.cor;
+                    v.descricao = av.vertice.descricao;
+                    v.peso = av.vertice.peso;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        catch (Throwable t) { return false; }
+        finally { commit.release(); }
+    }
+
+    public boolean atualizarAresta(Commit<AtualizarAresta> commit) {
+        try {
+            AtualizarAresta aa = commit.operation();
+
+            for (Aresta a : setE) {
+                if (a.v1 == aa.nomeV1 && a.v2 == aa.nomeV2) {
+                    if(!aa.aresta.flag && a.flag){
+                        Aresta aux = new Aresta(a.v2, a.v1, a.peso, a.flag, a.descricao);
+                        setE.remove(aux);
+                        a.flag = false;
+                    }
+                    a.peso = aa.aresta.peso;
+                    a.descricao = aa.aresta.descricao;
+                    if(aa.aresta.flag && a.flag){
+//                        this.getAresta(aa.aresta.v2, aa.aresta.v1,true).peso = aa.aresta.peso;
+//                        this.getAresta(aa.aresta.v2, aa.aresta.v1,true).descricao = aa.aresta.descricao;
+                    }
+                    if (aa.aresta.flag && !a.flag) {
+                        a.flag = true;
+                        Aresta aux = new Aresta(aa.aresta.v2, aa.aresta.v1, aa.aresta.peso, aa.aresta.flag, aa.aresta.descricao);
+                        /*if(this.getAresta(A.v2,A.v1,true) == null){
+                            setE.add(aux);
+                        }*/
+
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        catch (Throwable t) { return false; }
+        finally { commit.release(); }
+    }
+
+    public Vertice buscarVertice(Commit<BuscarVertice> commit) {
+        try {
+            BuscarVertice bv = commit.operation();
+
+            if (!setV.isEmpty()) {
+                for (Vertice v : setV) {
+                    if (v.nome == bv.nome) {
+                        return v;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        catch (Throwable t) { return null; }
+        finally { commit.release(); }
+    }
+
+    public Aresta buscarAresta(int v1, int v2) {
+        if(!setE.isEmpty()){
+            for (Aresta a : setE) {
+                if (a.v1 == v1 && a.v2 == v2) {
+                    return a;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public Aresta buscarAresta(Commit<BuscarAresta> commit) {
+        try {
+            BuscarAresta ba = commit.operation();
+            return this.buscarAresta(ba.nomeV1, ba.nomeV2);
+        }
+
+        catch (Throwable t) { return null; }
+        finally { commit.release(); }
+    }
 }
 
 class CriarVertice implements Command<Void> {
-    public final int cor;
-    public final int nome;
-    public final double peso;
-    public final String descricao;
+    final int cor;
+    final int nome;
+    final double peso;
+    final String descricao;
 
     public CriarVertice(int nome, int cor, String descricao, double peso) {
         this.cor = cor;
@@ -138,11 +237,11 @@ class CriarVertice implements Command<Void> {
 }
 
 class CriarAresta implements Command<Void> {
-    public final int v1;
-    public final int v2;
-    public final double peso;
-    public final boolean flag;
-    public final String descricao;
+    final int v1;
+    final int v2;
+    final double peso;
+    final boolean flag;
+    final String descricao;
 
     public CriarAresta(int v1, int v2, double peso, boolean flag, String descricao) {
         this.v1 = v1;
@@ -154,7 +253,7 @@ class CriarAresta implements Command<Void> {
 }
 
 class DeletarVertice implements Command<Void> {
-    public final int nome;
+    final int nome;
 
     public DeletarVertice(int nome) {
         this.nome = nome;
@@ -162,12 +261,52 @@ class DeletarVertice implements Command<Void> {
 }
 
 class DeletarAresta implements Command<Void> {
-    public final int v1;
-    public final int v2;
+    final int v1;
+    final int v2;
 
     public DeletarAresta(int v1, int v2) {
         this.v1 = v1;
         this.v2 = v2;
+    }
+}
+
+class AtualizarVertice implements Command<Void> {
+    final int nome;
+    final Vertice vertice;
+
+    public AtualizarVertice(int nome, Vertice vertice) {
+        this.nome = nome;
+        this.vertice = vertice;
+    }
+}
+
+class AtualizarAresta implements Command<Void> {
+    final int nomeV1;
+    final int nomeV2;
+    final Aresta aresta;
+
+    public AtualizarAresta(int nomeV1, int nomeV2, Aresta aresta) {
+        this.nomeV1 = nomeV1;
+        this.nomeV2 = nomeV2;
+        this.aresta = aresta;
+    }
+}
+
+class BuscarVertice implements Query<Void> {
+    final int nome;
+
+    public BuscarVertice(int nome) {
+        this.nome = nome;
+    }
+}
+
+class BuscarAresta implements Query<Void> {
+    final int nomeV1;
+    final int nomeV2;
+
+    public BuscarAresta(int nomeV1, int nomeV2) {
+        this.nomeV1 = nomeV1;
+        this.nomeV2 = nomeV2;
     }
 }
 

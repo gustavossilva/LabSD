@@ -25,6 +25,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     private final Operations.Client[] clients;
     private final TTransport[] transports;
     private final int id;
+
     public SDDBHandler(int id, int total) {
         this.clients = new Operations.Client[total];
         this.transports = new TTransport[total];
@@ -224,14 +225,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
 
         if (responsible == this.id) {
-            for(Vertice v:setV){
-                if(v.nome == nomeUp){
-                    v.cor = V.cor;
-                    v.descricao = V.descricao;
-                    v.peso = V.peso;
-                    return true;
-                }
-            }
+
         }
 
         else if ( startTransport(responsible) ) {
@@ -253,33 +247,13 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         if(nomeV1 != A.v1 || nomeV2 != A.v2){
             return false;
         }
-        int responsible = findResponsible(nomeV1);
-        if(responsible == this.id) {
-            for (Aresta a : setE) {
-                if (a.v1 == nomeV1 && a.v2 == nomeV2) {
-                    if(!A.flag && a.flag){
-                        Aresta aux = new Aresta(a.v2, a.v1, a.peso, a.flag, a.descricao);
-                        setE.remove(aux);
-                        a.flag = false;
-                    }
-                    a.peso = A.peso;
-                    a.descricao = A.descricao;
-                    if(A.flag && a.flag){
-                        this.getAresta(A.v2,A.v1,true).peso = A.peso;
-                        this.getAresta(A.v2,A.v1,true).descricao = A.descricao;
-                    }
-                    if (A.flag && !a.flag) {
-                        a.flag = true;
-                        Aresta aux = new Aresta(A.v2, A.v1, A.peso, A.flag, A.descricao);
-                        if(this.getAresta(A.v2,A.v1,true) == null){
-                            setE.add(aux);
-                        }
 
-                    }
-                    return true;
-                }
-            }
-        }else if(startTransport(responsible)){
+        int responsible = findResponsible(nomeV1);
+
+        if(responsible == this.id) {
+        }
+
+        else if(startTransport(responsible)){
             try{
                 if(clients[responsible].updateAresta(nomeV1,nomeV2,A)){
                     return true;
@@ -298,13 +272,6 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
 
         if (responsible == this.id) {
-            if (!setV.isEmpty()) {
-                for (Vertice v : setV) {
-                    if (v.nome == nome) {
-                        return v;
-                    }
-                }
-            }
         }
 
         else if ( startTransport(responsible) ) {
@@ -321,13 +288,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     @Override
     public Aresta getAresta(int v1, int v2,boolean first){
         Aresta as = null;
-        if(!setE.isEmpty()){
-            for (Aresta a : setE) {
-                if (a.v1 == v1 && a.v2 == v2) {
-                    return a;
-                }
-            }
-        }
+
         if(first) {
             for (Operations.Client client : this.clients) {
                 if (client != null) {

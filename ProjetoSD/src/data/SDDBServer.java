@@ -1,19 +1,12 @@
 package data;
 
-import io.atomix.catalyst.transport.Address;
-import io.atomix.copycat.server.CopycatServer;
 import models.Operations;
-import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
-import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * Created by gustavovm on 5/21/17.
@@ -27,7 +20,7 @@ public class SDDBServer {
 
         if (args.length > 1) {
             final int ID = Integer.parseInt(args[1]);
-            data = new DataServer("localhost",BASE_DATA_PORT);
+            data = new DataServer("localhost",BASE_DATA_PORT + ID);
             data.initDServer(1,"logs");
             try (SDDBHandler handler = new SDDBHandler(ID, N_SERVERS)) {
                 Operations.Processor processor = new Operations.Processor(handler);

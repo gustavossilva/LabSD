@@ -10,5 +10,7 @@
     <orderEntry type="library" exported="" name="org.apache.thrift:libthrift:0.10.0" level="project" />
     <orderEntry type="library" exported="" name="org.slf4j:slf4j-simple:1.7.24" level="project" />
     <orderEntry type="library" exported="" name="io.atomix:atomix-all:1.0.8" level="project" />
+=======
+    <orderEntry type="library" name="io.atomix:atomix-all:Release" level="project" />
   </component>
 </module>
