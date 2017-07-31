@@ -1,6 +1,7 @@
 package data;
 
 import io.atomix.catalyst.transport.Address;
+import io.atomix.catalyst.transport.Transport;
 import io.atomix.catalyst.transport.netty.NettyTransport;
 import io.atomix.copycat.client.CopycatClient;
 import models.Aresta;
@@ -16,7 +17,6 @@ import org.apache.thrift.transport.TTransportException;
 import java.io.Closeable;
 import java.security.MessageDigest;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 
 import static java.lang.Math.abs;
 
@@ -26,39 +26,35 @@ import static java.lang.Math.abs;
 public class SDDBHandler implements Operations.Iface, Closeable {
     private final RWSyncCollection<Aresta> setE = new RWSyncCollection<>();
     private final RWSyncCollection<Vertice> setV = new RWSyncCollection<>();
-
-    private final Operations.Client[] clients;
-    private final TTransport[] transports;
-    private final int id;
-
-    private final CopycatClient.Builder dataBuilder;
-    private final CopycatClient dataClient;
-    private final Collection<Address> cluster = Arrays.asList(new Address("localhost",25000));
-    private final CompletableFuture<CopycatClient> future;
+    private Operations.Client[] clients;
+    private CopycatClient dataClient;
+    private TTransport[] transports;
+    private int id;
 
     public SDDBHandler(int id, int total) {
-        this.clients = new Operations.Client[total];
-        this.transports = new TTransport[total];
-        this.id = id;
-        this.dataBuilder = CopycatClient.builder();
-        this.dataBuilder.withTransport(NettyTransport.builder().withThreads(1).build());
-        this.dataClient = dataBuilder.build();
-        this.future = dataClient.connect(cluster);
-        this.future.join();
-//        System.out.println(Thread.currentThread().getName() + ": handler " + id);
+        try {
+            final Transport transport = NettyTransport.builder().withThreads(1).build();
+            final CopycatClient.Builder dataBuilder = CopycatClient.builder().withTransport(transport);
+            final List<Address> cluster = Arrays.asList(new Address("localhost", SDDBServer.BASE_DATA_PORT + id));
 
-        for (int i = 0; i < this.clients.length; i++) {
-            if (i != this.id) {
-                this.transports[i] = new TSocket("localhost", SDDBServer.BASE_PORT + i);
-                final TProtocol protocol = new TBinaryProtocol(this.transports[i]);
-                this.clients[i] = new Operations.Client(protocol);
-            }
+            this.id = id;
+            this.transports = new TTransport[total];
+            this.clients = new Operations.Client[total];
+            this.dataClient = dataBuilder.build().connect(cluster).join();
 
-            else {
-                this.transports[i] = null;
-                this.clients[i] = null;
+            for (int i = 0; i < this.clients.length; i++) {
+                if (i != this.id) {
+                    this.transports[i] = new TSocket("localhost", SDDBServer.BASE_PORT + i);
+                    final TProtocol protocol = new TBinaryProtocol(this.transports[i]);
+                    this.clients[i] = new Operations.Client(protocol);
+                } else {
+                    this.transports[i] = null;
+                    this.clients[i] = null;
+                }
             }
         }
+
+        catch (Throwable t) { t.printStackTrace(); }
     }
 
     private int findResponsible(int i) {
