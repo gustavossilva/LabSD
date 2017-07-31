@@ -42,9 +42,6 @@ public final class SDDBTests {
             catch (AssertionError e) { System.err.println(e); }
         }
 
-        catch (TException e) {
-            e.printStackTrace(System.err);
-        }
-
+        catch (TException e) { e.printStackTrace(System.err); }
     }
 }
