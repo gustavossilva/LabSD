@@ -90,6 +90,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     }
 
     //Parte nova
+
     @Override
     public void carregaGrafo(String caminho){
         /*Object aux = null;
@@ -111,8 +112,8 @@ public class SDDBHandler implements Operations.Iface, Closeable {
             e.printStackTrace();
         }*/
     }
-
     //Cria um novo grafo caso nenhum tenha sido salvo (ou inicializado ainda)
+
     //Neste caso a função é usada de inicio (tanto parar inicializar, quanto para salvar)
     @Override
     public synchronized void salvaGrafo(String caminho){
@@ -129,8 +130,8 @@ public class SDDBHandler implements Operations.Iface, Closeable {
             exc.printStackTrace();
         }*/
     }
-
     //Fim parte nova
+
     @Override
     public boolean criarVertice(int nome, int cor, String descricao, double peso){
         int responsible = findResponsible(nome);
@@ -138,7 +139,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
 
         if (responsible == this.id) {
-            return this.dataClient.submit(new CriarVertice(nome, cor, descricao, peso)).join();
+            return this.dataClient.submit(new CriarVertice(nome, cor, descricao, peso, "")).join();
         }
 
         else if ( startTransport(responsible) ) {
@@ -153,7 +154,6 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
         return true;
     }
-
     @Override
     public boolean criarAresta(int v1, int v2, double peso, boolean flag, String descricao){
         int responsible1 = findResponsible(v1); //pego onde v1 está
@@ -203,11 +203,11 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
             if(a.isFlag()){
                 int responsible2 = findResponsible(v2);
-                if(responsible2 == this.id) {
-                    Aresta aux = new Aresta(v2,v1,a.getPeso(),a.isFlag(),a.getDescricao());
-                    setE.remove(aux);
-                    return true;
-                }else if (startTransport(responsible2)){
+
+                if(responsible2 == this.id)
+                    this.dataClient.submit(new DeletarAresta(v2, v1)).join();
+
+                else if (startTransport(responsible2)){
                     try{
                         return this.clients[responsible2].delAresta(a.v2,a.v1);
                     }catch(TException e){
@@ -404,7 +404,6 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         return arestas;
     }
 
-
     @Override
     public List<Vertice> listarVizinhosVertice(int nomeV) {
         ArrayList<Vertice> vizinhos = new ArrayList<>();
@@ -475,6 +474,16 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     }
 
     @Override
+    public List<String> consultaCidade(String cidade) throws TException {
+        return null;
+    }
+
+    @Override
+    public List<String> conhecidosPessoas(List<String> nome, int afinidade) throws TException {
+        return null;
+    }
+
+    @Override
     public void close() {
         for (TTransport transport : this.transports) {
             try {
@@ -486,7 +495,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
             }
         }
     }
-    //TODO Mudar a flag do direcionamento dependendo do update, ou da criação de uma nova aresta que cria um bi-direcionamento
-    //TODO tratar alguns minor bugs
 
+    //TODO tratar alguns minor bugs
+    //TODO Mudar a flag do direcionamento dependendo do update, ou da criação de uma nova aresta que cria um bi-direcionamento
 }

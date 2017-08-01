@@ -32,7 +32,7 @@ public class SDDBStateMachine extends StateMachine {
     public boolean criarVertice(Commit<CriarVertice> commit) {
         try {
             CriarVertice cv = commit.operation();
-            Vertice v = new Vertice(cv.nome, cv.cor, cv.descricao, cv.peso);
+            Vertice v = new Vertice(cv.nome, cv.cor, cv.descricao, cv.peso, cv.pessoa);
 
             if (setV != null) {
                 for (Vertice ve : setV) {
@@ -226,12 +226,14 @@ class CriarVertice implements Command<Boolean> {
     final int cor;
     final int nome;
     final double peso;
+    final String pessoa;
     final String descricao;
 
-    public CriarVertice(int nome, int cor, String descricao, double peso) {
+    public CriarVertice(int nome, int cor, String descricao, double peso, String pessoa) {
         this.cor = cor;
         this.nome = nome;
         this.peso = peso;
+        this.pessoa = pessoa;
         this.descricao = descricao;
     }
 }
