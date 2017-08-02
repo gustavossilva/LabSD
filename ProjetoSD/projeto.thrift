@@ -31,6 +31,6 @@ service Operations {
     string exibirAresta(1:bool flag),
     list<Vertice> listarVerticesArestas(1:i32 v1,2:i32 v2),
     list<Aresta> listarArestasVertice(1:i32 nomeV,2:bool flag),
-    list<Vertice> listarVizinhosVertice(1:i32 nomeV, bool first),
-    string menorCaminho(1:i32 v1,2:i32 v2, bool first)
+    list<Vertice> listarVizinhosVertice(1:i32 nomeV, 2:bool first),
+    string menorCaminho(1:i32 v1,2:i32 v2, 3:bool first)
 }
