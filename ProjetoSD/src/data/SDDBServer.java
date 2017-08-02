@@ -21,8 +21,8 @@ public class SDDBServer {
         if (args.length > 1) {
             final int ID = Integer.parseInt(args[1]);
 
-            try (DataServer data = new DataServer("localhost",BASE_DATA_PORT + ID)){
-                data.initDServer(1, "logs");
+            try (DataServer data = new DataServer("localhost",BASE_DATA_PORT + ID)) {
+                data.initDServer(1, String.format("logs%d", ID));
                 //System.out.println("entrou");
                 //data.killNode();
                 //System.out.println("saiu");

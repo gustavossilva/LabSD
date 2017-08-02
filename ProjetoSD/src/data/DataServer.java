@@ -8,7 +8,6 @@ import io.atomix.copycat.server.storage.Storage;
 import io.atomix.copycat.server.storage.StorageLevel;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -51,7 +50,7 @@ public class DataServer implements AutoCloseable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() throws Exception {
         this.server.shutdown().join();
         this.transport.close();
     }

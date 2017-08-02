@@ -499,7 +499,7 @@ public class SDDBHandler implements Operations.Iface, AutoCloseable {
     }
 
     @Override
-    public void close() {
+    public void close() throws Exception {
         for (TTransport transport : this.transports) {
             try {
                 transport.close();
