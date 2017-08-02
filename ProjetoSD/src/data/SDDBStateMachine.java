@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -220,6 +221,78 @@ public class SDDBStateMachine extends StateMachine {
         catch (Throwable t) { return null; }
         finally { commit.release(); }
     }
+
+    public String exibirVertice(Commit<ExibirVertice> commit) {
+        try {
+            StringBuffer buffer = new StringBuffer();
+
+            for (Vertice v:setV)
+                buffer.append("Vertice: ").append(v.nome)
+                        .append(" Peso: ").append(v.peso)
+                        .append(" Cor: ").append(v.cor)
+                        .append(" Descrição: ").append(v.descricao)
+                        .append(" Nome: ").append(v.pessoa)
+                        .append("\n");
+
+            return buffer.toString();
+        }
+
+        catch (Throwable t) { return ""; }
+        finally { commit.release(); }
+    }
+
+    public String exibirAresta(Commit<ExibirAresta> commit) {
+        try {
+            StringBuffer buffer = new StringBuffer();
+
+            for (Aresta a: setE)
+                buffer.append("Aresta: (").append(a.v1)
+                        .append(", ").append(a.v2)
+                        .append(") Peso: ").append(a.peso)
+                        .append(" Flag: ").append(a.flag)
+                        .append(" Descrição: ").append(a.descricao)
+                        .append("\n");
+
+            return buffer.toString();
+        }
+
+        catch (Throwable t) { return ""; }
+        finally { commit.release(); }
+    }
+
+    public List<Aresta> listarArestasVertice(Commit<ListarArestasVertice> commit) {
+        ArrayList<Aresta> arestas = new ArrayList<>();
+
+        try {
+            ListarArestasVertice lav = commit.operation();
+
+            for (Aresta a : setE)
+                if (a.v1 == lav.nomeV || a.v2 == lav.nomeV)
+                    arestas.add(a);
+        }
+
+        finally {
+            commit.release();
+            return arestas;
+        }
+    }
+
+    public List<String> consultarCidade(Commit<ConsultaCidade> commit) {
+        ArrayList<String> pessoas = new ArrayList<>();
+
+        try {
+            ConsultaCidade cc = commit.operation();
+
+            for (Vertice v: setV)
+                if ( v.descricao.equals(cc.cidade) )
+                    pessoas.add(v.pessoa);
+        }
+
+        finally {
+            commit.release();
+            return pessoas;
+        }
+    }
 }
 
 class CriarVertice implements Command<Boolean> {
@@ -309,6 +382,25 @@ class BuscarAresta implements Query<Aresta> {
     public BuscarAresta(int nomeV1, int nomeV2) {
         this.nomeV1 = nomeV1;
         this.nomeV2 = nomeV2;
+    }
+}
+
+class ExibirVertice implements Query<String> {}
+class ExibirAresta implements Query<String> {}
+
+class ListarArestasVertice implements Query<List<Aresta>> {
+    final int nomeV;
+
+    public ListarArestasVertice(int nomeV) {
+        this.nomeV = nomeV;
+    }
+}
+
+class ConsultaCidade implements Query<List<String>> {
+    final String cidade;
+
+    public ConsultaCidade(String cidade) {
+        this.cidade = cidade;
     }
 }
 

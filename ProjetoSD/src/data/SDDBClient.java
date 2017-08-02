@@ -1,15 +1,17 @@
 package data;
 
-import models.*;
-
+import models.Aresta;
+import models.Operations;
+import models.Vertice;
 import org.apache.thrift.TException;
-//import org.apache.thrift.transport.TFramedTransport;
-import org.apache.thrift.transport.TTransport;
-import org.apache.thrift.transport.TSocket;
-import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TSocket;
+import org.apache.thrift.transport.TTransport;
 
 import java.util.Scanner;
+
+//import org.apache.thrift.transport.TFramedTransport;
 
 /**
  * Created by gustavovm on 5/21/17.
