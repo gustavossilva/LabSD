@@ -23,36 +23,40 @@ public class DataServer implements AutoCloseable {
     private CopycatServer.Builder builder;
     private CopycatServer server;
     private CompletableFuture<CopycatServer> future;
-    private Collection<Address> cluster;
+    //private Collection<Address> cluster;
 
     public DataServer(String ip, int port){
         address = new Address(ip,port);
     }
 
-    public boolean initDServer(int ThreadNum, String fileDir){
+    public boolean initDServer(int ThreadNum, String fileDir, int ID){
         this.transport = NettyTransport.builder().withThreads(ThreadNum).build();
         this.builder = CopycatServer.builder(address);
         this.builder.withStateMachine(SDDBStateMachine::new).withTransport(this.transport);
         this.builder.withStorage(Storage.builder().withDirectory(new File(fileDir)).withStorageLevel(StorageLevel.DISK).build());
 
-        if(this.address.port() == SDDBServer.BASE_DATA_PORT) {
-            cluster = Arrays.asList(
-                    new Address("localhost", this.address.port() + 10),
-                    new Address("localhost", this.address.port() + 20),
-                    new Address("localhost", this.address.port() + 30));
-        }
+        //if(this.address.port() == SDDBServer.BASE_DATA_PORT) {
+        //    cluster = Arrays.asList(
+        //            new Address("localhost", this.address.port() + 10),
+        //            new Address("localhost", this.address.port() + 20),
+        //            new Address("localhost", this.address.port() + 30));
+        //}
+        this.server = this.builder.build();
         //its possible to add a new cluster, just pass a new list to server.join(newClusterList).join();
         try{
-            if(this.address.port() == SDDBServer.BASE_DATA_PORT) {
-                this.server = this.builder.build();
-                this.future = server.bootstrap(cluster);
-                server.join(cluster).join();
+            if(this.address.port()+ID == 37000) {
+                System.out.println("Entro aqui");
+                this.future = server.bootstrap();
                 future.join();
                 return true;
             }else{
-                this.server = this.builder.build();
-                this.future = server.bootstrap();
-                future.join();
+                try{
+                    wait(1000);
+                }catch (Exception e){}
+                System.out.println("Entro aqui 2");
+                Collection<Address> cluster = Arrays.asList(new Address("localhost",37000+(ID*10)));
+                server.join(cluster).join();
+
                 return true;
             }
         }catch (Exception e){
