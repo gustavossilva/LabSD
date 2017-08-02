@@ -24,6 +24,7 @@ public class SDDBServer {
 
             data = new DataServer("localhost",BASE_DATA_PORT + ID);
             data.initDServer(1,"logs");
+            data.killNode();
 
             try (SDDBHandler handler = new SDDBHandler(ID, N_SERVERS)) {
                 Operations.Processor processor = new Operations.Processor(handler);
