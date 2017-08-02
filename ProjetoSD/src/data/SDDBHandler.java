@@ -24,8 +24,6 @@ import static java.lang.Math.abs;
  * Created by gustavovm on 5/21/17.
  */
 public class SDDBHandler implements Operations.Iface, Closeable {
-//    private final RWSyncCollection<Aresta> setE = new RWSyncCollection<>();
-//    private final RWSyncCollection<Vertice> setV = new RWSyncCollection<>();
     private Operations.Client[] clients;
     private CopycatClient dataClient;
     private TTransport[] transports;
