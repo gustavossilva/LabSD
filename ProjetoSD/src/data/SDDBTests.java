@@ -19,13 +19,13 @@ public final class SDDBTests {
             Operations.Client client = new Operations.Client(new TBinaryProtocol(transport));
 
             try {
-                assert client.criarVertice(0, 0, "A", 0) : "Vértice A";   // S1
-                assert client.criarVertice(1, 0, "C", 0) : "Vértice C";   // S2
-                assert client.criarVertice(2, 0, "E", 0) : "Vértice E";   // S3
-                assert client.criarVertice(3, 0, "B", 0) : "Vértice B";   // S1
-                assert client.criarVertice(4, 0, "F", 0) : "Vértice F";   // S3
-                assert client.criarVertice(5, 0, "G", 0) : "Vértice G";   // S1
-                assert client.criarVertice(8, 0, "D", 0) : "Vértice D";   // S2
+                assert client.criarVertice(0, 0, "A", 0,"") : "Vértice A";   // S1
+                assert client.criarVertice(1, 0, "C", 0,"") : "Vértice C";   // S2
+                assert client.criarVertice(2, 0, "E", 0,"") : "Vértice E";   // S3
+                assert client.criarVertice(3, 0, "B", 0,"") : "Vértice B";   // S1
+                assert client.criarVertice(4, 0, "F", 0,"") : "Vértice F";   // S3
+                assert client.criarVertice(5, 0, "G", 0,"") : "Vértice G";   // S1
+                assert client.criarVertice(8, 0, "D", 0,"") : "Vértice D";   // S2
 
                 assert client.criarAresta(0, 3, 1, true, "A - B") : "Aresta A - B";
                 assert client.criarAresta(0, 1, 2, true, "A - C") : "Aresta A - C";

@@ -24,7 +24,9 @@ public class SDDBServer {
 
             data = new DataServer("localhost",BASE_DATA_PORT + ID);
             data.initDServer(1,"logs");
-            data.killNode();
+            //System.out.println("entrou");
+            //data.killNode();
+            //System.out.println("saiu");
 
             try (SDDBHandler handler = new SDDBHandler(ID, N_SERVERS)) {
                 Operations.Processor processor = new Operations.Processor(handler);
@@ -41,7 +43,7 @@ public class SDDBServer {
             for (int i = 0; i < N_SERVERS; i++) {
                 try {
                     ProcessBuilder b = new ProcessBuilder("java", "-jar", "Server.jar",
-                                                          Integer.toString(N_SERVERS), Integer.toString(i));
+                            Integer.toString(N_SERVERS), Integer.toString(i));
                     b.redirectOutput(new File( String.format("server%d.log", i + 1) )).start();
                 } catch (IOException e) {
                     e.printStackTrace();

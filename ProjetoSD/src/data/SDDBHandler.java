@@ -131,7 +131,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     //Fim parte nova
 
     @Override
-    public boolean criarVertice(int nome, int cor, String descricao, double peso){
+    public boolean criarVertice(int nome, int cor, String descricao, double peso, String pessoa){
         int responsible = findResponsible(nome);
 
         System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
@@ -142,7 +142,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
         else if ( startTransport(responsible) ) {
             try {
-                return this.clients[responsible].criarVertice(nome, cor, descricao, peso);
+                return this.clients[responsible].criarVertice(nome, cor, descricao, peso,pessoa);
             }
 
             catch (TException e) {

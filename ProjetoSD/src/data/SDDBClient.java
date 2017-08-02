@@ -81,7 +81,7 @@ public class SDDBClient {
                         descricao = leitura.nextLine();
                         System.out.println("Digite o peso: ");
                         peso = leitura.nextDouble();
-                        if(client.criarVertice(v1,cor,descricao,peso)){
+                        if(client.criarVertice(v1,cor,descricao,peso,"")){
                             System.out.println("Vértice criado com sucesso!");
                             System.out.println(client.exibirVertice(true));
                         }else{
