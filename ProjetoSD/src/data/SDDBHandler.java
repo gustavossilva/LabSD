@@ -24,8 +24,8 @@ import static java.lang.Math.abs;
  * Created by gustavovm on 5/21/17.
  */
 public class SDDBHandler implements Operations.Iface, Closeable {
-    private final RWSyncCollection<Aresta> setE = new RWSyncCollection<>();
-    private final RWSyncCollection<Vertice> setV = new RWSyncCollection<>();
+//    private final RWSyncCollection<Aresta> setE = new RWSyncCollection<>();
+//    private final RWSyncCollection<Vertice> setV = new RWSyncCollection<>();
     private Operations.Client[] clients;
     private CopycatClient dataClient;
     private TTransport[] transports;
@@ -321,7 +321,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
     @Override
     public String exibirGrafo(){
-        String exibir = "Vértices: ";
+        /*String exibir = "Vértices: ";
         for(Vertice v:setV){
             exibir = exibir+v.nome+" ,";
         }
@@ -330,7 +330,8 @@ public class SDDBHandler implements Operations.Iface, Closeable {
         for(Aresta a:setE){
             exibir = exibir+"("+a.v1+", "+a.v2+")";
         }
-        return exibir;
+        return exibir;*/
+        return "";
     }
 
     @Override
@@ -377,14 +378,8 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
     @Override
     public List<Aresta> listarArestasVertice(int nomeV, boolean first) {
-        ArrayList<Aresta> arestas = new ArrayList<>();
-        if(!setE.isEmpty()) {
-            for (Aresta a : setE) {
-                if (a.v1 == nomeV || a.v2 == nomeV) {
-                    arestas.add(a);
-                }
-            }
-        }
+        List<Aresta> arestas = this.dataClient.submit(new ListarArestasVertice(nomeV)).join();
+
         if(first){
             for(Operations.Client client : this.clients){
                 if(client !=null){

@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -258,6 +259,23 @@ public class SDDBStateMachine extends StateMachine {
         catch (Throwable t) { return ""; }
         finally { commit.release(); }
     }
+
+    public List<Aresta> listarArestasVertice(Commit<ListarArestasVertice> commit) {
+        ArrayList<Aresta> arestas = new ArrayList<>();
+
+        try {
+            ListarArestasVertice lav = commit.operation();
+
+            for (Aresta a : setE)
+                if (a.v1 == lav.nomeV || a.v2 == lav.nomeV)
+                    arestas.add(a);
+
+            return arestas;
+        }
+
+        catch (Throwable t) { return arestas; }
+        finally { commit.release(); }
+    }
 }
 
 class CriarVertice implements Command<Boolean> {
@@ -352,6 +370,14 @@ class BuscarAresta implements Query<Aresta> {
 
 class ExibirVertice implements Query<String> {}
 class ExibirAresta implements Query<String> {}
+
+class ListarArestasVertice implements Query<List<Aresta>> {
+    final int nomeV;
+
+    public ListarArestasVertice(int nomeV) {
+        this.nomeV = nomeV;
+    }
+}
 
 class RWSyncCollection<E> implements Collection<E>,Serializable {
     private final ArrayList<E> internal = new ArrayList<>();
