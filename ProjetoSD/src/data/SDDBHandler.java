@@ -464,13 +464,41 @@ public class SDDBHandler implements Operations.Iface, Closeable {
     }
 
     @Override
-    public List<String> consultaCidade(String cidade) {
-        return this.dataClient.submit(new ConsultarCidade(cidade)).join();
+    public List<String> consultaCidade(String cidade, boolean first) {
+        List<String> pessoas = this.dataClient.submit(new ConsultarCidade(cidade)).join();
+
+        if (first)
+            for (Operations.Client client: this.clients)
+                if (client != null) {
+                    try {
+                        pessoas.addAll( client.consultaCidade(cidade, false) );
+                    }
+
+                    catch (TException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+        return pessoas;
     }
 
     @Override
-    public List<String> conhecidosPessoas(List<String> nome, int afinidade) {
-        return this.dataClient.submit(new ConsultarConhecidosPessoas(nome, afinidade)).join();
+    public List<String> conhecidosPessoas(List<String> nome, int afinidade, boolean first) {
+        List<String> conhecidos = this.dataClient.submit(new ConsultarConhecidosPessoas(nome, afinidade)).join();
+
+        if (first)
+            for (Operations.Client client: this.clients)
+                if (client != null) {
+                    try {
+                        conhecidos.addAll( client.conhecidosPessoas(nome, afinidade, false) );
+                    }
+
+                    catch (TException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+        return conhecidos;
     }
 
     @Override
