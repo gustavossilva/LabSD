@@ -7,9 +7,6 @@ import org.apache.thrift.transport.TServerTransport;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-
-import static java.lang.Thread.sleep;
 
 /**
  * Created by gustavovm on 5/21/17.
@@ -17,18 +14,15 @@ import static java.lang.Thread.sleep;
 public class SDDBServer {
     final static int BASE_PORT = 25000;
     final static int BASE_DATA_PORT = 37000;
+
     public static void main(String [] args){
         final int N_SERVERS = (args.length > 0) ? Integer.parseInt(args[0]) : 3;
-        ArrayList<DataServer> servers = new ArrayList<>();
+
         if (args.length > 1) {
             final int ID = Integer.parseInt(args[1]);
 
-           // for(int i=1;i<4;i++){
-           //     servers.add(new DataServer("localhost",BASE_DATA_PORT + (ID+(i*10))));
-           //     servers.get(i-1).initDServer(1,"logs"+ID+".txt");
-           // }
             try (DataServer data = new DataServer("localhost",BASE_DATA_PORT)) {
-                data.initDServer(1, "logs",ID);
+                data.initDServer(1, "logs" + ID,ID);
                 //System.out.println("entrou");
                 //data.killNode();
                 //servers.get(0).killNode();
