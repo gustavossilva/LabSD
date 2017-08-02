@@ -351,10 +351,8 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
     @Override
     public String exibirAresta(boolean first){
-        String exibir = "";
-        for (Aresta a : setE) {
-            exibir = exibir + "Aresta: " + "(" + a.v1 + ", " + a.v2 + ") Peso: " + a.peso + " Flag: " + a.isFlag() + " Descrição: " + a.descricao + "\n";
-        }
+        String exibir = this.dataClient.submit(new ExibirAresta()).join();
+
         if(first) {
             for (Operations.Client client : this.clients)
                 if (client != null) {

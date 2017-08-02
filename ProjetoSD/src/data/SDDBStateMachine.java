@@ -239,6 +239,25 @@ public class SDDBStateMachine extends StateMachine {
         catch (Throwable t) { return ""; }
         finally { commit.release(); }
     }
+
+    public String exibirAresta(Commit<ExibirAresta> commit) {
+        try {
+            StringBuffer buffer = new StringBuffer();
+
+            for (Aresta a: setE)
+                buffer.append("Aresta: (").append(a.v1)
+                        .append(", ").append(a.v2)
+                        .append(") Peso: ").append(a.peso)
+                        .append(" Flag: ").append(a.flag)
+                        .append(" Descrição: ").append(a.descricao)
+                        .append("\n");
+
+            return buffer.toString();
+        }
+
+        catch (Throwable t) { return ""; }
+        finally { commit.release(); }
+    }
 }
 
 class CriarVertice implements Command<Boolean> {
@@ -332,6 +351,7 @@ class BuscarAresta implements Query<Aresta> {
 }
 
 class ExibirVertice implements Query<String> {}
+class ExibirAresta implements Query<String> {}
 
 class RWSyncCollection<E> implements Collection<E>,Serializable {
     private final ArrayList<E> internal = new ArrayList<>();
