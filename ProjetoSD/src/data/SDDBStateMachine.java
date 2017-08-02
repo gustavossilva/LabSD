@@ -35,14 +35,13 @@ public class SDDBStateMachine extends StateMachine {
             CriarVertice cv = commit.operation();
             Vertice v = new Vertice(cv.nome, cv.cor, cv.descricao, cv.peso, cv.pessoa);
 
-            if (setV != null) {
-                for (Vertice ve : setV) {
-                    if (ve.nome == cv.nome) {   //Nome já existente
-                        return false;
-                    }
-                }
-                setV.add(v);
-            }
+            System.out.println(this + "\tInserção do " + v);
+
+            for (Vertice ve : setV)
+                if (ve.nome == cv.nome)   //Nome já existente
+                    return false;
+
+            setV.add(v);
 
             return true;
         }
@@ -56,19 +55,25 @@ public class SDDBStateMachine extends StateMachine {
             CriarAresta ca = commit.operation();
             Aresta aux = new Aresta(ca.v1, ca.v2, ca.peso, ca.flag, ca.descricao);
 
+            System.out.println(this + "\tInserção da " + aux);
+
             // o vértice fonte está nesse servidor, então insere
             if (!checaIgualdade(aux))
                 setE.add(aux);
+
             if (ca.flag) {
                 Aresta aux2 = new Aresta(ca.v2, ca.v1, ca.peso, ca.flag, ca.descricao);
-                if (!checaIgualdade(aux2)) {
+
+                if (!checaIgualdade(aux2))
                     setE.add(aux2);
-                    return true;
-                }else{
+
+                else {
                     setE.remove(aux);
                     return false;
                 }
+
             }
+
             return true;
         }
 
@@ -80,21 +85,21 @@ public class SDDBStateMachine extends StateMachine {
         try {
             DeletarVertice dv = commit.operation();
 
-            //for(Aresta a:G.A) {
-            for(Aresta a:setE){
-                if(a.v1 == dv.nome || a.v2 == dv.nome){
+            System.out.println(this + "\tRemoção do vértice " + dv.nome);
+
+            for (Aresta a: setE)
+                if(a.v1 == dv.nome || a.v2 == dv.nome) {
                     this.deletarAresta(a.v1,a.v2);
-                    if(setE.isEmpty()){
+
+                    if (setE.isEmpty())
                         break;
-                    }
                 }
-            }
-            for(Vertice v:setV){
+
+            for (Vertice v: setV)
                 if (v.nome == dv.nome){
                     setV.remove(v);
                     return true;
                 }
-            }
 
             return false;
         }
@@ -104,12 +109,11 @@ public class SDDBStateMachine extends StateMachine {
     }
 
     public Aresta deletarAresta(int v1, int v2) {
-        for (Aresta a:setE) {
-            if(a.v1 == v1 && a.v2 == v2){
+        for (Aresta a:setE)
+            if(a.v1 == v1 && a.v2 == v2) {
                 setE.remove(a);
                 return a;
             }
-        }
 
         return null;
     }
@@ -117,6 +121,7 @@ public class SDDBStateMachine extends StateMachine {
     public Aresta deletarAresta(Commit<DeletarAresta> commit) {
         try {
             DeletarAresta da = commit.operation();
+            System.out.printf("%s\tRemoção da aresta (%d, %d)%n", this, da.v1, da.v2);
             return this.deletarAresta(da.v1, da.v2);
         }
 
@@ -127,6 +132,8 @@ public class SDDBStateMachine extends StateMachine {
     public boolean atualizarVertice(Commit<AtualizarVertice> commit) {
         try {
             AtualizarVertice av = commit.operation();
+
+            System.out.println(this + "\tAtualização do vértice " + av.nome);
 
             for(Vertice v:setV){
                 if(v.nome == av.nome){
@@ -147,6 +154,8 @@ public class SDDBStateMachine extends StateMachine {
     public boolean atualizarAresta(Commit<AtualizarAresta> commit) {
         try {
             AtualizarAresta aa = commit.operation();
+
+            System.out.printf("%s\tRemoção da aresta (%d, %d)%n", this, aa.nomeV1, aa.nomeV2);
 
             for (Aresta a : setE) {
                 if (a.v1 == aa.nomeV1 && a.v2 == aa.nomeV2) {
@@ -196,6 +205,7 @@ public class SDDBStateMachine extends StateMachine {
     public Vertice buscarVertice(Commit<BuscarVertice> commit) {
         try {
             BuscarVertice bv = commit.operation();
+            System.out.println(this + "\tBusca pelo vértice " + bv.nome);
             return this.buscarVertice(bv.nome);
         }
 
@@ -204,11 +214,9 @@ public class SDDBStateMachine extends StateMachine {
     }
 
     public Aresta buscarAresta(int v1, int v2) {
-        if(!setE.isEmpty()){
-            for (Aresta a : setE) {
-                if (a.v1 == v1 && a.v2 == v2) {
-                    return a;
-                }
+        for (Aresta a : setE) {
+            if (a.v1 == v1 && a.v2 == v2) {
+                return a;
             }
         }
 
@@ -218,6 +226,7 @@ public class SDDBStateMachine extends StateMachine {
     public Aresta buscarAresta(Commit<BuscarAresta> commit) {
         try {
             BuscarAresta ba = commit.operation();
+            System.out.printf("%s\tBusca pela aresta (%d, %d)%n", this, ba.nomeV1, ba.nomeV2);
             return this.buscarAresta(ba.nomeV1, ba.nomeV2);
         }
 
@@ -228,6 +237,8 @@ public class SDDBStateMachine extends StateMachine {
     public String exibirVertice(Commit<ExibirVertice> commit) {
         try {
             StringBuffer buffer = new StringBuffer();
+
+            System.out.println(this + "\tExibição dos vértices");
 
             for (Vertice v:setV)
                 buffer.append("Vertice: ").append(v.nome)
@@ -247,6 +258,8 @@ public class SDDBStateMachine extends StateMachine {
     public String exibirAresta(Commit<ExibirAresta> commit) {
         try {
             StringBuffer buffer = new StringBuffer();
+
+            System.out.println(this + "\tExibição das arestas");
 
             for (Aresta a: setE)
                 buffer.append("Aresta: (").append(a.v1)
@@ -269,6 +282,8 @@ public class SDDBStateMachine extends StateMachine {
         try {
             ListarArestasVertice lav = commit.operation();
 
+            System.out.println(this + "\tListagem de arestas incidentes no vértice " + lav.nomeV);
+
             for (Aresta a : setE)
                 if (a.v1 == lav.nomeV || a.v2 == lav.nomeV)
                     arestas.add(a);
@@ -286,6 +301,8 @@ public class SDDBStateMachine extends StateMachine {
         try {
             ConsultarCidade cc = commit.operation();
 
+            System.out.println(this + "\tBusca pelas pessoas da cidade " + cc.cidade);
+
             for (Vertice v: setV)
                 if ( v.descricao.equals(cc.cidade) )
                     pessoas.add(v.pessoa);
@@ -302,6 +319,8 @@ public class SDDBStateMachine extends StateMachine {
 
         try {
             ConsultarConhecidosPessoas ccp = commit.operation();
+
+            System.out.println(this + "\tBusca pelos conhecidos das pessoas " + ccp.pessoas);
 
             for (Aresta a: setE)
                 if (a.peso == ccp.nivel) {
