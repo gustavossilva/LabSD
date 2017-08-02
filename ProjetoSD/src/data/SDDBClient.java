@@ -172,7 +172,14 @@ public class SDDBClient {
                         }
                         break;
                     case 9:
-                        System.out.println(client.exibirGrafo());
+                        System.out.println("Qual aresta deseja visualizar os vértices? ");
+                        System.out.println("Vertíce 1: ");
+                        v1 = leitura.nextInt();
+                        System.out.println("Vertíce 2: ");
+                        v2 = leitura.nextInt();
+                        System.out.println("flag: ");
+                        boolean testando = leitura.nextBoolean();
+                        System.out.println(client.getAresta(v1,v2,testando));
                         break;
                     case 10:
                         System.out.println(client.exibirVertice(true));
