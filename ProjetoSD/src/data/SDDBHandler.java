@@ -136,7 +136,7 @@ public class SDDBHandler implements Operations.Iface, AutoCloseable {
         System.out.println("[SERVER-" + this.id + "] responsible = " + responsible);
 
         if (responsible == this.id) {
-            return this.dataClient.submit(new CriarVertice(nome, cor, descricao, peso, "")).join();
+            return this.dataClient.submit(new CriarVertice(nome, cor, descricao, peso, pessoa)).join();
         }
 
         else if ( startTransport(responsible) ) {
