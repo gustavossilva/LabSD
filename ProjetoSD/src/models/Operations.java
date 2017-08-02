@@ -12,9 +12,9 @@ public class Operations {
 
   public interface Iface {
 
-    public java.util.List<java.lang.String> consultaCidade(java.lang.String cidade) throws org.apache.thrift.TException;
+    public java.util.List<java.lang.String> consultaCidade(java.lang.String cidade, boolean first) throws org.apache.thrift.TException;
 
-    public java.util.List<java.lang.String> conhecidosPessoas(java.util.List<java.lang.String> nome, int afinidade) throws org.apache.thrift.TException;
+    public java.util.List<java.lang.String> conhecidosPessoas(java.util.List<java.lang.String> nome, int afinidade, boolean first) throws org.apache.thrift.TException;
 
     public void carregaGrafo(java.lang.String caminho) throws org.apache.thrift.TException;
 
@@ -54,9 +54,9 @@ public class Operations {
 
   public interface AsyncIface {
 
-    public void consultaCidade(java.lang.String cidade, org.apache.thrift.async.AsyncMethodCallback<java.util.List<java.lang.String>> resultHandler) throws org.apache.thrift.TException;
+    public void consultaCidade(java.lang.String cidade, boolean first, org.apache.thrift.async.AsyncMethodCallback<java.util.List<java.lang.String>> resultHandler) throws org.apache.thrift.TException;
 
-    public void conhecidosPessoas(java.util.List<java.lang.String> nome, int afinidade, org.apache.thrift.async.AsyncMethodCallback<java.util.List<java.lang.String>> resultHandler) throws org.apache.thrift.TException;
+    public void conhecidosPessoas(java.util.List<java.lang.String> nome, int afinidade, boolean first, org.apache.thrift.async.AsyncMethodCallback<java.util.List<java.lang.String>> resultHandler) throws org.apache.thrift.TException;
 
     public void carregaGrafo(java.lang.String caminho, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws org.apache.thrift.TException;
 
@@ -114,16 +114,17 @@ public class Operations {
       super(iprot, oprot);
     }
 
-    public java.util.List<java.lang.String> consultaCidade(java.lang.String cidade) throws org.apache.thrift.TException
+    public java.util.List<java.lang.String> consultaCidade(java.lang.String cidade, boolean first) throws org.apache.thrift.TException
     {
-      send_consultaCidade(cidade);
+      send_consultaCidade(cidade, first);
       return recv_consultaCidade();
     }
 
-    public void send_consultaCidade(java.lang.String cidade) throws org.apache.thrift.TException
+    public void send_consultaCidade(java.lang.String cidade, boolean first) throws org.apache.thrift.TException
     {
       consultaCidade_args args = new consultaCidade_args();
       args.setCidade(cidade);
+      args.setFirst(first);
       sendBase("consultaCidade", args);
     }
 
@@ -137,17 +138,18 @@ public class Operations {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "consultaCidade failed: unknown result");
     }
 
-    public java.util.List<java.lang.String> conhecidosPessoas(java.util.List<java.lang.String> nome, int afinidade) throws org.apache.thrift.TException
+    public java.util.List<java.lang.String> conhecidosPessoas(java.util.List<java.lang.String> nome, int afinidade, boolean first) throws org.apache.thrift.TException
     {
-      send_conhecidosPessoas(nome, afinidade);
+      send_conhecidosPessoas(nome, afinidade, first);
       return recv_conhecidosPessoas();
     }
 
-    public void send_conhecidosPessoas(java.util.List<java.lang.String> nome, int afinidade) throws org.apache.thrift.TException
+    public void send_conhecidosPessoas(java.util.List<java.lang.String> nome, int afinidade, boolean first) throws org.apache.thrift.TException
     {
       conhecidosPessoas_args args = new conhecidosPessoas_args();
       args.setNome(nome);
       args.setAfinidade(afinidade);
+      args.setFirst(first);
       sendBase("conhecidosPessoas", args);
     }
 
@@ -579,24 +581,27 @@ public class Operations {
       super(protocolFactory, clientManager, transport);
     }
 
-    public void consultaCidade(java.lang.String cidade, org.apache.thrift.async.AsyncMethodCallback<java.util.List<java.lang.String>> resultHandler) throws org.apache.thrift.TException {
+    public void consultaCidade(java.lang.String cidade, boolean first, org.apache.thrift.async.AsyncMethodCallback<java.util.List<java.lang.String>> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      consultaCidade_call method_call = new consultaCidade_call(cidade, resultHandler, this, ___protocolFactory, ___transport);
+      consultaCidade_call method_call = new consultaCidade_call(cidade, first, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class consultaCidade_call extends org.apache.thrift.async.TAsyncMethodCall<java.util.List<java.lang.String>> {
       private java.lang.String cidade;
-      public consultaCidade_call(java.lang.String cidade, org.apache.thrift.async.AsyncMethodCallback<java.util.List<java.lang.String>> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private boolean first;
+      public consultaCidade_call(java.lang.String cidade, boolean first, org.apache.thrift.async.AsyncMethodCallback<java.util.List<java.lang.String>> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.cidade = cidade;
+        this.first = first;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("consultaCidade", org.apache.thrift.protocol.TMessageType.CALL, 0));
         consultaCidade_args args = new consultaCidade_args();
         args.setCidade(cidade);
+        args.setFirst(first);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -611,9 +616,9 @@ public class Operations {
       }
     }
 
-    public void conhecidosPessoas(java.util.List<java.lang.String> nome, int afinidade, org.apache.thrift.async.AsyncMethodCallback<java.util.List<java.lang.String>> resultHandler) throws org.apache.thrift.TException {
+    public void conhecidosPessoas(java.util.List<java.lang.String> nome, int afinidade, boolean first, org.apache.thrift.async.AsyncMethodCallback<java.util.List<java.lang.String>> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      conhecidosPessoas_call method_call = new conhecidosPessoas_call(nome, afinidade, resultHandler, this, ___protocolFactory, ___transport);
+      conhecidosPessoas_call method_call = new conhecidosPessoas_call(nome, afinidade, first, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -621,10 +626,12 @@ public class Operations {
     public static class conhecidosPessoas_call extends org.apache.thrift.async.TAsyncMethodCall<java.util.List<java.lang.String>> {
       private java.util.List<java.lang.String> nome;
       private int afinidade;
-      public conhecidosPessoas_call(java.util.List<java.lang.String> nome, int afinidade, org.apache.thrift.async.AsyncMethodCallback<java.util.List<java.lang.String>> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private boolean first;
+      public conhecidosPessoas_call(java.util.List<java.lang.String> nome, int afinidade, boolean first, org.apache.thrift.async.AsyncMethodCallback<java.util.List<java.lang.String>> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.nome = nome;
         this.afinidade = afinidade;
+        this.first = first;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -632,6 +639,7 @@ public class Operations {
         conhecidosPessoas_args args = new conhecidosPessoas_args();
         args.setNome(nome);
         args.setAfinidade(afinidade);
+        args.setFirst(first);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -1285,7 +1293,7 @@ public class Operations {
 
       public consultaCidade_result getResult(I iface, consultaCidade_args args) throws org.apache.thrift.TException {
         consultaCidade_result result = new consultaCidade_result();
-        result.success = iface.consultaCidade(args.cidade);
+        result.success = iface.consultaCidade(args.cidade, args.first);
         return result;
       }
     }
@@ -1305,7 +1313,7 @@ public class Operations {
 
       public conhecidosPessoas_result getResult(I iface, conhecidosPessoas_args args) throws org.apache.thrift.TException {
         conhecidosPessoas_result result = new conhecidosPessoas_result();
-        result.success = iface.conhecidosPessoas(args.nome, args.afinidade);
+        result.success = iface.conhecidosPessoas(args.nome, args.afinidade, args.first);
         return result;
       }
     }
@@ -1748,7 +1756,7 @@ public class Operations {
       }
 
       public void start(I iface, consultaCidade_args args, org.apache.thrift.async.AsyncMethodCallback<java.util.List<java.lang.String>> resultHandler) throws org.apache.thrift.TException {
-        iface.consultaCidade(args.cidade,resultHandler);
+        iface.consultaCidade(args.cidade, args.first,resultHandler);
       }
     }
 
@@ -1809,7 +1817,7 @@ public class Operations {
       }
 
       public void start(I iface, conhecidosPessoas_args args, org.apache.thrift.async.AsyncMethodCallback<java.util.List<java.lang.String>> resultHandler) throws org.apache.thrift.TException {
-        iface.conhecidosPessoas(args.nome, args.afinidade,resultHandler);
+        iface.conhecidosPessoas(args.nome, args.afinidade, args.first,resultHandler);
       }
     }
 
@@ -2860,15 +2868,18 @@ public class Operations {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("consultaCidade_args");
 
     private static final org.apache.thrift.protocol.TField CIDADE_FIELD_DESC = new org.apache.thrift.protocol.TField("cidade", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField FIRST_FIELD_DESC = new org.apache.thrift.protocol.TField("first", org.apache.thrift.protocol.TType.BOOL, (short)2);
 
     private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new consultaCidade_argsStandardSchemeFactory();
     private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new consultaCidade_argsTupleSchemeFactory();
 
     public java.lang.String cidade; // required
+    public boolean first; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      CIDADE((short)1, "cidade");
+      CIDADE((short)1, "cidade"),
+      FIRST((short)2, "first");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -2885,6 +2896,8 @@ public class Operations {
         switch(fieldId) {
           case 1: // CIDADE
             return CIDADE;
+          case 2: // FIRST
+            return FIRST;
           default:
             return null;
         }
@@ -2925,11 +2938,15 @@ public class Operations {
     }
 
     // isset id assignments
+    private static final int __FIRST_ISSET_ID = 0;
+    private byte __isset_bitfield = 0;
     public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.CIDADE, new org.apache.thrift.meta_data.FieldMetaData("cidade", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.FIRST, new org.apache.thrift.meta_data.FieldMetaData("first", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
       metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(consultaCidade_args.class, metaDataMap);
     }
@@ -2938,19 +2955,24 @@ public class Operations {
     }
 
     public consultaCidade_args(
-      java.lang.String cidade)
+      java.lang.String cidade,
+      boolean first)
     {
       this();
       this.cidade = cidade;
+      this.first = first;
+      setFirstIsSet(true);
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public consultaCidade_args(consultaCidade_args other) {
+      __isset_bitfield = other.__isset_bitfield;
       if (other.isSetCidade()) {
         this.cidade = other.cidade;
       }
+      this.first = other.first;
     }
 
     public consultaCidade_args deepCopy() {
@@ -2960,6 +2982,8 @@ public class Operations {
     @Override
     public void clear() {
       this.cidade = null;
+      setFirstIsSet(false);
+      this.first = false;
     }
 
     public java.lang.String getCidade() {
@@ -2986,6 +3010,29 @@ public class Operations {
       }
     }
 
+    public boolean isFirst() {
+      return this.first;
+    }
+
+    public consultaCidade_args setFirst(boolean first) {
+      this.first = first;
+      setFirstIsSet(true);
+      return this;
+    }
+
+    public void unsetFirst() {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __FIRST_ISSET_ID);
+    }
+
+    /** Returns true if field first is set (has been assigned a value) and false otherwise */
+    public boolean isSetFirst() {
+      return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __FIRST_ISSET_ID);
+    }
+
+    public void setFirstIsSet(boolean value) {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __FIRST_ISSET_ID, value);
+    }
+
     public void setFieldValue(_Fields field, java.lang.Object value) {
       switch (field) {
       case CIDADE:
@@ -2996,6 +3043,14 @@ public class Operations {
         }
         break;
 
+      case FIRST:
+        if (value == null) {
+          unsetFirst();
+        } else {
+          setFirst((java.lang.Boolean)value);
+        }
+        break;
+
       }
     }
 
@@ -3003,6 +3058,9 @@ public class Operations {
       switch (field) {
       case CIDADE:
         return getCidade();
+
+      case FIRST:
+        return isFirst();
 
       }
       throw new java.lang.IllegalStateException();
@@ -3017,6 +3075,8 @@ public class Operations {
       switch (field) {
       case CIDADE:
         return isSetCidade();
+      case FIRST:
+        return isSetFirst();
       }
       throw new java.lang.IllegalStateException();
     }
@@ -3045,6 +3105,15 @@ public class Operations {
           return false;
       }
 
+      boolean this_present_first = true;
+      boolean that_present_first = true;
+      if (this_present_first || that_present_first) {
+        if (!(this_present_first && that_present_first))
+          return false;
+        if (this.first != that.first)
+          return false;
+      }
+
       return true;
     }
 
@@ -3055,6 +3124,8 @@ public class Operations {
       hashCode = hashCode * 8191 + ((isSetCidade()) ? 131071 : 524287);
       if (isSetCidade())
         hashCode = hashCode * 8191 + cidade.hashCode();
+
+      hashCode = hashCode * 8191 + ((first) ? 131071 : 524287);
 
       return hashCode;
     }
@@ -3073,6 +3144,16 @@ public class Operations {
       }
       if (isSetCidade()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.cidade, other.cidade);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetFirst()).compareTo(other.isSetFirst());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetFirst()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.first, other.first);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -3104,6 +3185,10 @@ public class Operations {
         sb.append(this.cidade);
       }
       first = false;
+      if (!first) sb.append(", ");
+      sb.append("first:");
+      sb.append(this.first);
+      first = false;
       sb.append(")");
       return sb.toString();
     }
@@ -3123,6 +3208,8 @@ public class Operations {
 
     private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
       try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
         read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
       } catch (org.apache.thrift.TException te) {
         throw new java.io.IOException(te);
@@ -3155,6 +3242,14 @@ public class Operations {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 2: // FIRST
+              if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+                struct.first = iprot.readBool();
+                struct.setFirstIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -3175,6 +3270,9 @@ public class Operations {
           oprot.writeString(struct.cidade);
           oprot.writeFieldEnd();
         }
+        oprot.writeFieldBegin(FIRST_FIELD_DESC);
+        oprot.writeBool(struct.first);
+        oprot.writeFieldEnd();
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -3196,19 +3294,29 @@ public class Operations {
         if (struct.isSetCidade()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetFirst()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetCidade()) {
           oprot.writeString(struct.cidade);
+        }
+        if (struct.isSetFirst()) {
+          oprot.writeBool(struct.first);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, consultaCidade_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-        java.util.BitSet incoming = iprot.readBitSet(1);
+        java.util.BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           struct.cidade = iprot.readString();
           struct.setCidadeIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.first = iprot.readBool();
+          struct.setFirstIsSet(true);
         }
       }
     }
@@ -3634,17 +3742,20 @@ public class Operations {
 
     private static final org.apache.thrift.protocol.TField NOME_FIELD_DESC = new org.apache.thrift.protocol.TField("nome", org.apache.thrift.protocol.TType.LIST, (short)1);
     private static final org.apache.thrift.protocol.TField AFINIDADE_FIELD_DESC = new org.apache.thrift.protocol.TField("afinidade", org.apache.thrift.protocol.TType.I32, (short)2);
+    private static final org.apache.thrift.protocol.TField FIRST_FIELD_DESC = new org.apache.thrift.protocol.TField("first", org.apache.thrift.protocol.TType.BOOL, (short)3);
 
     private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new conhecidosPessoas_argsStandardSchemeFactory();
     private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new conhecidosPessoas_argsTupleSchemeFactory();
 
     public java.util.List<java.lang.String> nome; // required
     public int afinidade; // required
+    public boolean first; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       NOME((short)1, "nome"),
-      AFINIDADE((short)2, "afinidade");
+      AFINIDADE((short)2, "afinidade"),
+      FIRST((short)3, "first");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -3663,6 +3774,8 @@ public class Operations {
             return NOME;
           case 2: // AFINIDADE
             return AFINIDADE;
+          case 3: // FIRST
+            return FIRST;
           default:
             return null;
         }
@@ -3704,6 +3817,7 @@ public class Operations {
 
     // isset id assignments
     private static final int __AFINIDADE_ISSET_ID = 0;
+    private static final int __FIRST_ISSET_ID = 1;
     private byte __isset_bitfield = 0;
     public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
@@ -3713,6 +3827,8 @@ public class Operations {
               new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
       tmpMap.put(_Fields.AFINIDADE, new org.apache.thrift.meta_data.FieldMetaData("afinidade", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.FIRST, new org.apache.thrift.meta_data.FieldMetaData("first", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
       metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(conhecidosPessoas_args.class, metaDataMap);
     }
@@ -3722,12 +3838,15 @@ public class Operations {
 
     public conhecidosPessoas_args(
       java.util.List<java.lang.String> nome,
-      int afinidade)
+      int afinidade,
+      boolean first)
     {
       this();
       this.nome = nome;
       this.afinidade = afinidade;
       setAfinidadeIsSet(true);
+      this.first = first;
+      setFirstIsSet(true);
     }
 
     /**
@@ -3740,6 +3859,7 @@ public class Operations {
         this.nome = __this__nome;
       }
       this.afinidade = other.afinidade;
+      this.first = other.first;
     }
 
     public conhecidosPessoas_args deepCopy() {
@@ -3751,6 +3871,8 @@ public class Operations {
       this.nome = null;
       setAfinidadeIsSet(false);
       this.afinidade = 0;
+      setFirstIsSet(false);
+      this.first = false;
     }
 
     public int getNomeSize() {
@@ -3815,6 +3937,29 @@ public class Operations {
       __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __AFINIDADE_ISSET_ID, value);
     }
 
+    public boolean isFirst() {
+      return this.first;
+    }
+
+    public conhecidosPessoas_args setFirst(boolean first) {
+      this.first = first;
+      setFirstIsSet(true);
+      return this;
+    }
+
+    public void unsetFirst() {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __FIRST_ISSET_ID);
+    }
+
+    /** Returns true if field first is set (has been assigned a value) and false otherwise */
+    public boolean isSetFirst() {
+      return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __FIRST_ISSET_ID);
+    }
+
+    public void setFirstIsSet(boolean value) {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __FIRST_ISSET_ID, value);
+    }
+
     public void setFieldValue(_Fields field, java.lang.Object value) {
       switch (field) {
       case NOME:
@@ -3833,6 +3978,14 @@ public class Operations {
         }
         break;
 
+      case FIRST:
+        if (value == null) {
+          unsetFirst();
+        } else {
+          setFirst((java.lang.Boolean)value);
+        }
+        break;
+
       }
     }
 
@@ -3843,6 +3996,9 @@ public class Operations {
 
       case AFINIDADE:
         return getAfinidade();
+
+      case FIRST:
+        return isFirst();
 
       }
       throw new java.lang.IllegalStateException();
@@ -3859,6 +4015,8 @@ public class Operations {
         return isSetNome();
       case AFINIDADE:
         return isSetAfinidade();
+      case FIRST:
+        return isSetFirst();
       }
       throw new java.lang.IllegalStateException();
     }
@@ -3896,6 +4054,15 @@ public class Operations {
           return false;
       }
 
+      boolean this_present_first = true;
+      boolean that_present_first = true;
+      if (this_present_first || that_present_first) {
+        if (!(this_present_first && that_present_first))
+          return false;
+        if (this.first != that.first)
+          return false;
+      }
+
       return true;
     }
 
@@ -3908,6 +4075,8 @@ public class Operations {
         hashCode = hashCode * 8191 + nome.hashCode();
 
       hashCode = hashCode * 8191 + afinidade;
+
+      hashCode = hashCode * 8191 + ((first) ? 131071 : 524287);
 
       return hashCode;
     }
@@ -3936,6 +4105,16 @@ public class Operations {
       }
       if (isSetAfinidade()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.afinidade, other.afinidade);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetFirst()).compareTo(other.isSetFirst());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetFirst()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.first, other.first);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -3970,6 +4149,10 @@ public class Operations {
       if (!first) sb.append(", ");
       sb.append("afinidade:");
       sb.append(this.afinidade);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("first:");
+      sb.append(this.first);
       first = false;
       sb.append(")");
       return sb.toString();
@@ -4042,6 +4225,14 @@ public class Operations {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 3: // FIRST
+              if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+                struct.first = iprot.readBool();
+                struct.setFirstIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -4072,6 +4263,9 @@ public class Operations {
         oprot.writeFieldBegin(AFINIDADE_FIELD_DESC);
         oprot.writeI32(struct.afinidade);
         oprot.writeFieldEnd();
+        oprot.writeFieldBegin(FIRST_FIELD_DESC);
+        oprot.writeBool(struct.first);
+        oprot.writeFieldEnd();
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -4096,7 +4290,10 @@ public class Operations {
         if (struct.isSetAfinidade()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetFirst()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetNome()) {
           {
             oprot.writeI32(struct.nome.size());
@@ -4109,12 +4306,15 @@ public class Operations {
         if (struct.isSetAfinidade()) {
           oprot.writeI32(struct.afinidade);
         }
+        if (struct.isSetFirst()) {
+          oprot.writeBool(struct.first);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, conhecidosPessoas_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-        java.util.BitSet incoming = iprot.readBitSet(2);
+        java.util.BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
             org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
@@ -4131,6 +4331,10 @@ public class Operations {
         if (incoming.get(1)) {
           struct.afinidade = iprot.readI32();
           struct.setAfinidadeIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.first = iprot.readBool();
+          struct.setFirstIsSet(true);
         }
       }
     }
