@@ -1,15 +1,17 @@
 package data;
 
-import models.*;
-
+import models.Aresta;
+import models.Operations;
+import models.Vertice;
 import org.apache.thrift.TException;
-//import org.apache.thrift.transport.TFramedTransport;
-import org.apache.thrift.transport.TTransport;
-import org.apache.thrift.transport.TSocket;
-import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TSocket;
+import org.apache.thrift.transport.TTransport;
 
 import java.util.Scanner;
+
+//import org.apache.thrift.transport.TFramedTransport;
 
 /**
  * Created by gustavovm on 5/21/17.
@@ -139,7 +141,7 @@ public class SDDBClient {
                         descricao = leitura.nextLine();
                         System.out.println("Digite o peso: ");
                         peso = leitura.nextDouble();
-                        if(client.updateVertice(v1,new Vertice(v2,cor,descricao,peso))){
+                        if(client.updateVertice(v1,new Vertice(v2,cor,descricao,peso,""))){
                             System.out.println("Atualizado com sucesso!");
                             System.out.println(client.exibirVertice(true));
                         }else{
