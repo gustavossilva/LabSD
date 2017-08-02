@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static java.lang.Thread.sleep;
+
 /**
  * Created by gustavovm on 5/21/17.
  */
@@ -21,16 +23,16 @@ public class SDDBServer {
         if (args.length > 1) {
             final int ID = Integer.parseInt(args[1]);
 
-            for(int i=1;i<4;i++){
-                servers.add(new DataServer("localhost",BASE_DATA_PORT + (ID+(i*10))));
-                servers.get(i-1).initDServer(1,"logs"+ID+".txt");
-            }
-            try (DataServer data = new DataServer("localhost",BASE_DATA_PORT + ID)) {
-                data.initDServer(1, "logs"+ID+".txt");
+           // for(int i=1;i<4;i++){
+           //     servers.add(new DataServer("localhost",BASE_DATA_PORT + (ID+(i*10))));
+           //     servers.get(i-1).initDServer(1,"logs"+ID+".txt");
+           // }
+            try (DataServer data = new DataServer("localhost",BASE_DATA_PORT)) {
+                data.initDServer(1, "logs",ID);
                 //System.out.println("entrou");
-                data.killNode();
-                servers.get(0).killNode();
-                servers.get(1).killNode();
+                //data.killNode();
+                //servers.get(0).killNode();
+                //servers.get(1).killNode();
                 //System.out.println("saiu");
 
                 try (SDDBHandler handler = new SDDBHandler(ID, N_SERVERS)) {
