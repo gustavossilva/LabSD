@@ -13,7 +13,7 @@ public final class SDDBTests {
     private SDDBTests() {}
 
     public static void main(String[] args) {
-        try (TTransport transport = new TSocket("localhost",9080)) {
+        try (TTransport transport = new TSocket("localhost",SDDBServer.BASE_PORT)) {
             transport.open();
 
             Operations.Client client = new Operations.Client(new TBinaryProtocol(transport));

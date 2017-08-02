@@ -1,18 +1,21 @@
 package data;
 
 import io.atomix.catalyst.transport.Address;
+import io.atomix.catalyst.transport.Transport;
 import io.atomix.catalyst.transport.netty.NettyTransport;
 import io.atomix.copycat.server.CopycatServer;
 import io.atomix.copycat.server.storage.Storage;
 import io.atomix.copycat.server.storage.StorageLevel;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 /**
  * Created by gustavovm on 7/30/17.
  */
-public class DataServer {
+public class DataServer implements AutoCloseable {
+    private Transport transport;
     private Address address;
     private CopycatServer.Builder builder;
     private CopycatServer server;
@@ -24,9 +27,9 @@ public class DataServer {
     }
 
     public boolean initDServer(int ThreadNum, String fileDir){
+        this.transport = NettyTransport.builder().withThreads(ThreadNum).build();
         this.builder = CopycatServer.builder(address);
-        this.builder.withStateMachine(SDDBStateMachine::new);
-        this.builder.withTransport(NettyTransport.builder().withThreads(ThreadNum).build());
+        this.builder.withStateMachine(SDDBStateMachine::new).withTransport(this.transport);
         this.builder.withStorage(Storage.builder().withDirectory(new File(fileDir)).withStorageLevel(StorageLevel.DISK).build());
 /*
         cluster = Arrays.asList(
@@ -45,6 +48,12 @@ public class DataServer {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public void close() throws IOException {
+        this.server.shutdown().join();
+        this.transport.close();
     }
 /*    public void killNode(){
         System.out.println("Teste");

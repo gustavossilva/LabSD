@@ -14,7 +14,6 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
-import java.io.Closeable;
 import java.security.MessageDigest;
 import java.util.*;
 
@@ -23,7 +22,7 @@ import static java.lang.Math.abs;
 /**
  * Created by gustavovm on 5/21/17.
  */
-public class SDDBHandler implements Operations.Iface, Closeable {
+public class SDDBHandler implements Operations.Iface, AutoCloseable {
     private Operations.Client[] clients;
     private CopycatClient dataClient;
     private TTransport[] transports;
@@ -52,7 +51,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
             }
         }
 
-        catch (Throwable t) { t.printStackTrace(); }
+        catch (Throwable t) { System.out.println(t); }
     }
 
     private int findResponsible(int i) {
