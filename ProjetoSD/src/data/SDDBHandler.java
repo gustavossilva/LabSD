@@ -300,7 +300,7 @@ public class SDDBHandler implements Operations.Iface, AutoCloseable {
     public Aresta getAresta(int v1, int v2,boolean first){
         Aresta as = this.dataClient.submit(new BuscarAresta(v1, v2)).join();
 
-        if (first && as != null) {
+        if (first && as == null) {
             for (Operations.Client client : this.clients) {
                 if (client != null) {
                     try {
