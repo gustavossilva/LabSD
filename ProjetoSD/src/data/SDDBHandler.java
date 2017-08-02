@@ -465,12 +465,12 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
     @Override
     public List<String> consultaCidade(String cidade) {
-        return this.dataClient.submit(new ConsultaCidade(cidade)).join();
+        return this.dataClient.submit(new ConsultarCidade(cidade)).join();
     }
 
     @Override
-    public List<String> conhecidosPessoas(List<String> nome, int afinidade) throws TException {
-        return null;
+    public List<String> conhecidosPessoas(List<String> nome, int afinidade) {
+        return this.dataClient.submit(new ConsultarConhecidosPessoas(nome, afinidade)).join();
     }
 
     @Override

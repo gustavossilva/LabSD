@@ -181,19 +181,22 @@ public class SDDBStateMachine extends StateMachine {
         finally { commit.release(); }
     }
 
+    public Vertice buscarVertice(int nome) {
+        if (!setV.isEmpty()) {
+            for (Vertice v : setV) {
+                if (v.nome == nome) {
+                    return v;
+                }
+            }
+        }
+
+        return null;
+    }
+
     public Vertice buscarVertice(Commit<BuscarVertice> commit) {
         try {
             BuscarVertice bv = commit.operation();
-
-            if (!setV.isEmpty()) {
-                for (Vertice v : setV) {
-                    if (v.nome == bv.nome) {
-                        return v;
-                    }
-                }
-            }
-
-            return null;
+            return this.buscarVertice(bv.nome);
         }
 
         catch (Throwable t) { return null; }
@@ -277,11 +280,11 @@ public class SDDBStateMachine extends StateMachine {
         }
     }
 
-    public List<String> consultarCidade(Commit<ConsultaCidade> commit) {
+    public List<String> consultarCidade(Commit<ConsultarCidade> commit) {
         ArrayList<String> pessoas = new ArrayList<>();
 
         try {
-            ConsultaCidade cc = commit.operation();
+            ConsultarCidade cc = commit.operation();
 
             for (Vertice v: setV)
                 if ( v.descricao.equals(cc.cidade) )
@@ -291,6 +294,28 @@ public class SDDBStateMachine extends StateMachine {
         finally {
             commit.release();
             return pessoas;
+        }
+    }
+
+    public List<String> consultarConhecidosPessoas(Commit<ConsultarConhecidosPessoas> commit) {
+        ArrayList<String> conhecidos = new ArrayList<>();
+
+        try {
+            ConsultarConhecidosPessoas ccp = commit.operation();
+
+            for (Aresta a: setE)
+                if (a.peso == ccp.nivel) {
+                    if ( ccp.pessoas.contains(a.v1) )
+                        conhecidos.add(this.buscarVertice(a.v2).pessoa);
+
+                    else if ( ccp.pessoas.contains(a.v2) )
+                        conhecidos.add(this.buscarVertice(a.v1).pessoa);
+                }
+        }
+
+        finally {
+            commit.release();
+            return conhecidos;
         }
     }
 }
@@ -396,11 +421,21 @@ class ListarArestasVertice implements Query<List<Aresta>> {
     }
 }
 
-class ConsultaCidade implements Query<List<String>> {
+class ConsultarCidade implements Query<List<String>> {
     final String cidade;
 
-    public ConsultaCidade(String cidade) {
+    public ConsultarCidade(String cidade) {
         this.cidade = cidade;
+    }
+}
+
+class ConsultarConhecidosPessoas implements Query<List<String>> {
+    final int nivel;
+    final List<String> pessoas;
+
+    public ConsultarConhecidosPessoas(List<String> pessoas, int nivel) {
+        this.pessoas = pessoas;
+        this.nivel = nivel;
     }
 }
 
