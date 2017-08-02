@@ -335,10 +335,7 @@ public class SDDBHandler implements Operations.Iface, Closeable {
 
     @Override
     public String exibirVertice(boolean first){
-        String exibir = "";
-        for (Vertice v:setV){
-            exibir = exibir+"Vertice: "+v.nome+" Peso: "+v.peso+" Cor: "+v.cor+" Descrição: "+v.descricao+"\n";
-        }
+        String exibir = this.dataClient.submit(new ExibirVertice()).join();
 
         if(first) {
             for (Operations.Client client : this.clients)

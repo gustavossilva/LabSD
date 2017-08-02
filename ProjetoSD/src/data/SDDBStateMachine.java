@@ -220,6 +220,25 @@ public class SDDBStateMachine extends StateMachine {
         catch (Throwable t) { return null; }
         finally { commit.release(); }
     }
+
+    public String exibirVertice(Commit<ExibirVertice> commit) {
+        try {
+            StringBuffer buffer = new StringBuffer();
+
+            for (Vertice v:setV)
+                buffer.append("Vertice: ").append(v.nome)
+                        .append(" Peso: ").append(v.peso)
+                        .append(" Cor: ").append(v.cor)
+                        .append(" Descrição: ").append(v.descricao)
+                        .append(" Nome: ").append(v.pessoa)
+                        .append("\n");
+
+            return buffer.toString();
+        }
+
+        catch (Throwable t) { return ""; }
+        finally { commit.release(); }
+    }
 }
 
 class CriarVertice implements Command<Boolean> {
@@ -311,6 +330,8 @@ class BuscarAresta implements Query<Aresta> {
         this.nomeV2 = nomeV2;
     }
 }
+
+class ExibirVertice implements Query<String> {}
 
 class RWSyncCollection<E> implements Collection<E>,Serializable {
     private final ArrayList<E> internal = new ArrayList<>();
