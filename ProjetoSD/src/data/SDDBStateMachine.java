@@ -269,12 +269,29 @@ public class SDDBStateMachine extends StateMachine {
             for (Aresta a : setE)
                 if (a.v1 == lav.nomeV || a.v2 == lav.nomeV)
                     arestas.add(a);
-
-            return arestas;
         }
 
-        catch (Throwable t) { return arestas; }
-        finally { commit.release(); }
+        finally {
+            commit.release();
+            return arestas;
+        }
+    }
+
+    public List<String> consultarCidade(Commit<ConsultaCidade> commit) {
+        ArrayList<String> pessoas = new ArrayList<>();
+
+        try {
+            ConsultaCidade cc = commit.operation();
+
+            for (Vertice v: setV)
+                if ( v.descricao.equals(cc.cidade) )
+                    pessoas.add(v.pessoa);
+        }
+
+        finally {
+            commit.release();
+            return pessoas;
+        }
     }
 }
 
@@ -376,6 +393,14 @@ class ListarArestasVertice implements Query<List<Aresta>> {
 
     public ListarArestasVertice(int nomeV) {
         this.nomeV = nomeV;
+    }
+}
+
+class ConsultaCidade implements Query<List<String>> {
+    final String cidade;
+
+    public ConsultaCidade(String cidade) {
+        this.cidade = cidade;
     }
 }
 
