@@ -139,7 +139,7 @@ public class SDDBClient {
                         descricao = leitura.nextLine();
                         System.out.println("Digite o peso: ");
                         peso = leitura.nextDouble();
-                        if(client.updateVertice(v1,new Vertice(v2,cor,descricao,peso))){
+                        if(client.updateVertice(v1,new Vertice(v2,cor,descricao,peso,""))){
                             System.out.println("Atualizado com sucesso!");
                             System.out.println(client.exibirVertice(true));
                         }else{
@@ -170,7 +170,14 @@ public class SDDBClient {
                         }
                         break;
                     case 9:
-                        System.out.println(client.exibirGrafo());
+                        System.out.println("Qual aresta deseja visualizar os vértices? ");
+                        System.out.println("Vertíce 1: ");
+                        v1 = leitura.nextInt();
+                        System.out.println("Vertíce 2: ");
+                        v2 = leitura.nextInt();
+                        System.out.println("flag: ");
+                        boolean testando = leitura.nextBoolean();
+                        System.out.println(client.getAresta(v1,v2,testando));
                         break;
                     case 10:
                         System.out.println(client.exibirVertice(true));
