@@ -4,7 +4,8 @@ struct Vertice {
 	1:i32 nome,
 	2:i32 cor,
 	3:string descricao,
-	4:double peso
+	4:double peso,
+        5:string pessoa
 }
 
 struct Aresta {
@@ -16,6 +17,8 @@ struct Aresta {
 }
 
 service Operations {
+    list<string> consultaCidade(1:string cidade),
+    list<string> conhecidosPessoas(1:list<string> nome,2:i32 afinidade),
     void carregaGrafo(1:string caminho),
     void salvaGrafo(1:string caminho),
     bool criarVertice(1:i32 nome,2:i32 cor,3:string descricao,4:double peso),

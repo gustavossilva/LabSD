@@ -15,6 +15,7 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
   private static final org.apache.thrift.protocol.TField COR_FIELD_DESC = new org.apache.thrift.protocol.TField("cor", org.apache.thrift.protocol.TType.I32, (short)2);
   private static final org.apache.thrift.protocol.TField DESCRICAO_FIELD_DESC = new org.apache.thrift.protocol.TField("descricao", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField PESO_FIELD_DESC = new org.apache.thrift.protocol.TField("peso", org.apache.thrift.protocol.TType.DOUBLE, (short)4);
+  private static final org.apache.thrift.protocol.TField PESSOA_FIELD_DESC = new org.apache.thrift.protocol.TField("pessoa", org.apache.thrift.protocol.TType.STRING, (short)5);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new VerticeStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new VerticeTupleSchemeFactory();
@@ -23,13 +24,15 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
   public int cor; // required
   public java.lang.String descricao; // required
   public double peso; // required
+  public java.lang.String pessoa; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     NOME((short)1, "nome"),
     COR((short)2, "cor"),
     DESCRICAO((short)3, "descricao"),
-    PESO((short)4, "peso");
+    PESO((short)4, "peso"),
+    PESSOA((short)5, "pessoa");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -52,6 +55,8 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
           return DESCRICAO;
         case 4: // PESO
           return PESO;
+        case 5: // PESSOA
+          return PESSOA;
         default:
           return null;
       }
@@ -107,6 +112,8 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.PESO, new org.apache.thrift.meta_data.FieldMetaData("peso", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.DOUBLE)));
+    tmpMap.put(_Fields.PESSOA, new org.apache.thrift.meta_data.FieldMetaData("pessoa", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Vertice.class, metaDataMap);
   }
@@ -118,7 +125,8 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
     int nome,
     int cor,
     java.lang.String descricao,
-    double peso)
+    double peso,
+    java.lang.String pessoa)
   {
     this();
     this.nome = nome;
@@ -128,6 +136,7 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
     this.descricao = descricao;
     this.peso = peso;
     setPesoIsSet(true);
+    this.pessoa = pessoa;
   }
 
   /**
@@ -141,6 +150,9 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
       this.descricao = other.descricao;
     }
     this.peso = other.peso;
+    if (other.isSetPessoa()) {
+      this.pessoa = other.pessoa;
+    }
   }
 
   public Vertice deepCopy() {
@@ -156,6 +168,7 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
     this.descricao = null;
     setPesoIsSet(false);
     this.peso = 0.0;
+    this.pessoa = null;
   }
 
   public int getNome() {
@@ -251,6 +264,30 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
     __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __PESO_ISSET_ID, value);
   }
 
+  public java.lang.String getPessoa() {
+    return this.pessoa;
+  }
+
+  public Vertice setPessoa(java.lang.String pessoa) {
+    this.pessoa = pessoa;
+    return this;
+  }
+
+  public void unsetPessoa() {
+    this.pessoa = null;
+  }
+
+  /** Returns true if field pessoa is set (has been assigned a value) and false otherwise */
+  public boolean isSetPessoa() {
+    return this.pessoa != null;
+  }
+
+  public void setPessoaIsSet(boolean value) {
+    if (!value) {
+      this.pessoa = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case NOME:
@@ -285,6 +322,14 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
       }
       break;
 
+    case PESSOA:
+      if (value == null) {
+        unsetPessoa();
+      } else {
+        setPessoa((java.lang.String)value);
+      }
+      break;
+
     }
   }
 
@@ -301,6 +346,9 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
 
     case PESO:
       return getPeso();
+
+    case PESSOA:
+      return getPessoa();
 
     }
     throw new java.lang.IllegalStateException();
@@ -321,6 +369,8 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
       return isSetDescricao();
     case PESO:
       return isSetPeso();
+    case PESSOA:
+      return isSetPessoa();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -376,6 +426,15 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
         return false;
     }
 
+    boolean this_present_pessoa = true && this.isSetPessoa();
+    boolean that_present_pessoa = true && that.isSetPessoa();
+    if (this_present_pessoa || that_present_pessoa) {
+      if (!(this_present_pessoa && that_present_pessoa))
+        return false;
+      if (!this.pessoa.equals(that.pessoa))
+        return false;
+    }
+
     return true;
   }
 
@@ -392,6 +451,10 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
       hashCode = hashCode * 8191 + descricao.hashCode();
 
     hashCode = hashCode * 8191 + org.apache.thrift.TBaseHelper.hashCode(peso);
+
+    hashCode = hashCode * 8191 + ((isSetPessoa()) ? 131071 : 524287);
+    if (isSetPessoa())
+      hashCode = hashCode * 8191 + pessoa.hashCode();
 
     return hashCode;
   }
@@ -444,6 +507,16 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
         return lastComparison;
       }
     }
+    lastComparison = java.lang.Boolean.valueOf(isSetPessoa()).compareTo(other.isSetPessoa());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPessoa()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.pessoa, other.pessoa);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -482,6 +555,14 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
     if (!first) sb.append(", ");
     sb.append("peso:");
     sb.append(this.peso);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("pessoa:");
+    if (this.pessoa == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.pessoa);
+    }
     first = false;
     sb.append(")");
     return sb.toString();
@@ -560,6 +641,14 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 5: // PESSOA
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.pessoa = iprot.readString();
+              struct.setPessoaIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -589,6 +678,11 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
       oprot.writeFieldBegin(PESO_FIELD_DESC);
       oprot.writeDouble(struct.peso);
       oprot.writeFieldEnd();
+      if (struct.pessoa != null) {
+        oprot.writeFieldBegin(PESSOA_FIELD_DESC);
+        oprot.writeString(struct.pessoa);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -619,7 +713,10 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
       if (struct.isSetPeso()) {
         optionals.set(3);
       }
-      oprot.writeBitSet(optionals, 4);
+      if (struct.isSetPessoa()) {
+        optionals.set(4);
+      }
+      oprot.writeBitSet(optionals, 5);
       if (struct.isSetNome()) {
         oprot.writeI32(struct.nome);
       }
@@ -632,12 +729,15 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
       if (struct.isSetPeso()) {
         oprot.writeDouble(struct.peso);
       }
+      if (struct.isSetPessoa()) {
+        oprot.writeString(struct.pessoa);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, Vertice struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-      java.util.BitSet incoming = iprot.readBitSet(4);
+      java.util.BitSet incoming = iprot.readBitSet(5);
       if (incoming.get(0)) {
         struct.nome = iprot.readI32();
         struct.setNomeIsSet(true);
@@ -653,6 +753,10 @@ public class Vertice implements org.apache.thrift.TBase<Vertice, Vertice._Fields
       if (incoming.get(3)) {
         struct.peso = iprot.readDouble();
         struct.setPesoIsSet(true);
+      }
+      if (incoming.get(4)) {
+        struct.pessoa = iprot.readString();
+        struct.setPessoaIsSet(true);
       }
     }
   }
